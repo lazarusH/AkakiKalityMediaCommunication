@@ -1,0 +1,357 @@
+.about-page {
+  min-height: 100vh;
+  background-color: #f7fafc;
+}
+
+.about-header {
+  background: linear-gradient(135deg, #1a5490 0%, #0d3a66 100%);
+  color: white;
+  padding: 80px 20px;
+  text-align: center;
+  border-bottom: 4px solid #2d8659;
+}
+
+.about-header h1 {
+  font-size: 3.5rem;
+  font-weight: 900;
+  margin-bottom: 15px;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.about-header p {
+  font-size: 1.8rem;
+  font-weight: 600;
+  opacity: 0.95;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.about-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 20px;
+}
+
+.about-section {
+  background: white;
+  padding: 50px;
+  border-radius: 16px;
+  margin-bottom: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 2px solid #e2e8f0;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.about-section:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  transform: translateY(-5px);
+}
+
+.section-icon {
+  font-size: 3.5rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.about-section h2 {
+  font-size: 2.2rem;
+  color: #1a5490;
+  margin-bottom: 25px;
+  font-weight: 800;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.about-section h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #1a5490, #2d8659);
+  border-radius: 2px;
+}
+
+.section-content p {
+  font-size: 1.15rem;
+  line-height: 2;
+  color: #4a5568;
+  margin-bottom: 20px;
+}
+
+.amharic-text {
+  font-size: 1.2rem !important;
+  line-height: 2.2 !important;
+  color: #1a202c;
+  font-weight: 500;
+}
+
+.highlight-text {
+  font-size: 1.4rem !important;
+  font-weight: 700 !important;
+  color: #1a5490;
+  line-height: 2 !important;
+  padding: 25px;
+  background: linear-gradient(135deg, #e6f3ff 0%, #f0f9ff 100%);
+  border-left: 5px solid #1a5490;
+  border-radius: 8px;
+  margin-bottom: 20px !important;
+}
+
+.english-text {
+  font-size: 1.1rem;
+  font-style: italic;
+  color: #6b7280;
+  padding-left: 25px;
+}
+
+/* Map Section */
+.map-section {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e6f3ff 100%);
+  border: 3px solid #1a5490;
+}
+
+.map-container {
+  margin-top: 30px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Vision Section */
+.vision-section {
+  background: linear-gradient(135deg, #1a5490 0%, #0d3a66 100%);
+  color: white;
+}
+
+.vision-section h2 {
+  color: white;
+}
+
+.vision-section h2::after {
+  background: #f4b324;
+}
+
+.vision-section .highlight-text {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border-left-color: #f4b324;
+}
+
+.vision-section .english-text {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Mission Section */
+.mission-section {
+  background: linear-gradient(135deg, #2d8659 0%, #1a5490 100%);
+  color: white;
+}
+
+.mission-section h2 {
+  color: white;
+}
+
+.mission-section h2::after {
+  background: #f4b324;
+}
+
+.mission-section .highlight-text {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border-left-color: #f4b324;
+}
+
+.mission-section .english-text {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Values Section */
+.values-section {
+  background: linear-gradient(135deg, #f7fafc 0%, #e6f3ff 100%);
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  margin-top: 35px;
+}
+
+.value-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.value-card:hover {
+  background: linear-gradient(135deg, #1a5490 0%, #2d8659 100%);
+  color: white;
+  transform: translateY(-8px);
+  box-shadow: 0 8px 20px rgba(26, 84, 144, 0.3);
+  border-color: #1a5490;
+}
+
+.value-icon {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+}
+
+.value-card h3 {
+  font-size: 1.1rem;
+  color: #1a5490;
+  margin-bottom: 10px;
+  font-weight: 800;
+  line-height: 1.6;
+}
+
+.value-card:hover h3 {
+  color: white;
+}
+
+.value-card p {
+  font-size: 0.9rem;
+  color: #6b7280;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.value-card:hover p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Statistics Section */
+.stats-section {
+  background: linear-gradient(135deg, #1a5490 0%, #0d3a66 100%);
+  color: white;
+  border: 3px solid #2d8659;
+}
+
+.stats-section h2 {
+  color: white;
+  text-align: center;
+  margin-bottom: 45px;
+}
+
+.stats-section h2::after {
+  background: #f4b324;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 35px;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.stat-number {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: #f4b324;
+  margin-bottom: 15px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.stat-label {
+  font-size: 1.1rem;
+  opacity: 0.95;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .about-header {
+    padding: 60px 20px;
+  }
+
+  .about-header h1 {
+    font-size: 2.5rem;
+  }
+
+  .about-header p {
+    font-size: 1.3rem;
+  }
+
+  .about-section {
+    padding: 30px;
+  }
+
+  .about-section h2 {
+    font-size: 1.8rem;
+  }
+
+  .amharic-text {
+    font-size: 1.05rem !important;
+  }
+
+  .highlight-text {
+    font-size: 1.2rem !important;
+    padding: 20px;
+  }
+
+  .values-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.95rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .about-header h1 {
+    font-size: 2rem;
+  }
+
+  .about-header p {
+    font-size: 1.1rem;
+  }
+
+  .about-section {
+    padding: 20px;
+  }
+
+  .about-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .section-icon {
+    font-size: 2.5rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

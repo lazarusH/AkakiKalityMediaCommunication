@@ -1,0 +1,22 @@
+{
+  "name": "akaki-kality-media-communication",
+  "version": "1.0.0",
+  "description": "Government Subcity News Platform for Akaki Kality",
+  "author": "Alazar Tesema",
+  "license": "PROPRIETARY",
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "preview": "cd frontend && npm run preview",
+    "setup": "cd frontend && npm install"
+  },
+  "keywords": [
+    "news",
+    "government",
+    "subcity",
+    "ethiopia",
+    "react",
+    "supabase"
+  ]
+}
+
