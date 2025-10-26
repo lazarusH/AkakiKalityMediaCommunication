@@ -53,14 +53,14 @@ const AdminHome = () => {
   };
 
   if (loading) {
-    return <div className="admin-loading">Loading dashboard...</div>;
+    return <div className="admin-loading">እየተጫነ ነው...</div>;
   }
 
   return (
     <div className="admin-home">
       <div className="admin-header">
-        <h1>Dashboard Overview</h1>
-        <p>Welcome to the Akaki Kality Subcity Admin Panel</p>
+        <h1>የአስተዳደር መቆጣጠሪያ ሰሌዳ</h1>
+        <p>እንኳን ወደ አቃቂ ቃሊቲ ክፍለ ከተማ አስተዳደር ፓናል በደህና መጡ</p>
       </div>
 
       <div className="stats-grid">
@@ -68,41 +68,41 @@ const AdminHome = () => {
           <div className="stat-icon">📰</div>
           <div className="stat-info">
             <h3>{stats.articles}</h3>
-            <p>Total Articles</p>
+            <p>ጠቅላላ ዜናዎች</p>
           </div>
-          <Link to="/admin/articles" className="stat-link">View All →</Link>
+          <Link to="/admin/articles" className="stat-link">ሁሉንም ይመልከቱ →</Link>
         </div>
 
         <div className="stat-card">
           <div className="stat-icon">📸</div>
           <div className="stat-info">
             <h3>{stats.gallery}</h3>
-            <p>Gallery Images</p>
+            <p>የምስል ማስቀመጫ</p>
           </div>
-          <Link to="/admin/gallery" className="stat-link">View All →</Link>
+          <Link to="/admin/gallery" className="stat-link">ሁሉንም ይመልከቱ →</Link>
         </div>
 
         <div className="stat-card">
           <div className="stat-icon">📄</div>
           <div className="stat-info">
             <h3>{stats.files}</h3>
-            <p>Files & Forms</p>
+            <p>ፋይሎች እና ቅጾች</p>
           </div>
-          <Link to="/admin/files" className="stat-link">View All →</Link>
+          <Link to="/admin/files" className="stat-link">ሁሉንም ይመልከቱ →</Link>
         </div>
       </div>
 
       <div className="recent-section">
         <div className="section-header">
-          <h2>Recent Articles</h2>
+          <h2>የቅርብ ጊዜ ዜናዎች</h2>
           <Link to="/admin/articles/new" className="btn-primary">
-            + New Article
+            + አዲስ ዜና ጨምር
           </Link>
         </div>
 
         {recentArticles.length === 0 ? (
           <div className="no-data">
-            <p>No articles yet. Create your first article!</p>
+            <p>ገና ምንም ዜና የለም። የመጀመሪያውን ዜና ይፍጠሩ!</p>
           </div>
         ) : (
           <div className="articles-list">
@@ -117,7 +117,7 @@ const AdminHome = () => {
                   <span className="article-category">{article.category}</span>
                 </div>
                 <span className="article-date">
-                  {new Date(article.published_at).toLocaleDateString('en-US', {
+                  {new Date(article.published_at).toLocaleDateString('am-ET', {
                     month: 'short',
                     day: 'numeric',
                     year: 'numeric'
@@ -130,27 +130,27 @@ const AdminHome = () => {
       </div>
 
       <div className="quick-actions">
-        <h2>Quick Actions</h2>
+        <h2>ፈጣን እርምጃዎች</h2>
         <div className="actions-grid">
           <Link to="/admin/articles/new" className="action-card">
             <span className="action-icon">✍️</span>
-            <h3>Create Article</h3>
-            <p>Write and publish a new article</p>
+            <h3>ዜና ይፍጠሩ</h3>
+            <p>አዲስ ዜና ይጻፉ እና ያትሙ</p>
           </Link>
           <Link to="/admin/gallery/upload" className="action-card">
             <span className="action-icon">🖼️</span>
-            <h3>Upload Image</h3>
-            <p>Add photos to the gallery</p>
+            <h3>ምስል ይጫኑ</h3>
+            <p>ወደ ምስል ማስቀመጫ ፎቶዎችን ይጨምሩ</p>
           </Link>
           <Link to="/admin/files/upload" className="action-card">
             <span className="action-icon">📤</span>
-            <h3>Upload File</h3>
-            <p>Add documents and forms</p>
+            <h3>ፋይል ይጫኑ</h3>
+            <p>ሰነዶችን እና ቅጾችን ይጨምሩ</p>
           </Link>
           <Link to="/" className="action-card">
             <span className="action-icon">👁️</span>
-            <h3>View Site</h3>
-            <p>See the public website</p>
+            <h3>ድረ-ገጹን ይመልከቱ</h3>
+            <p>የህዝብ ድረ-ገጹን ይመልከቱ</p>
           </Link>
         </div>
       </div>

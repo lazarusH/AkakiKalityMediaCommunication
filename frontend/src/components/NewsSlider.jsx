@@ -89,3 +89,4 @@ const NewsSlider = ({ articles }) => {
 
 export default NewsSlider;
 
+

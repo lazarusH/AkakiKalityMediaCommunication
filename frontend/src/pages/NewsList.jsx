@@ -8,12 +8,18 @@ import './NewsList.css';
 const NewsList = () => {
   const { category } = useParams();
   const [articles, setArticles] = useState([]);
+  const [filteredArticles, setFilteredArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState(category || 'all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchArticles(activeCategory);
   }, [activeCategory]);
+
+  useEffect(() => {
+    filterArticles();
+  }, [articles, searchQuery]);
 
   useEffect(() => {
     setActiveCategory(category || 'all');
@@ -35,11 +41,26 @@ const NewsList = () => {
 
       if (error) throw error;
       setArticles(data || []);
+      setFilteredArticles(data || []);
     } catch (error) {
       console.error('Error fetching articles:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const filterArticles = () => {
+    if (!searchQuery.trim()) {
+      setFilteredArticles(articles);
+      return;
+    }
+
+    const query = searchQuery.toLowerCase();
+    const filtered = articles.filter(article => 
+      article.title?.toLowerCase().includes(query) ||
+      article.content?.toLowerCase().includes(query)
+    );
+    setFilteredArticles(filtered);
   };
 
   const categories = [
@@ -59,6 +80,26 @@ const NewsList = () => {
       </div>
 
       <div className="news-container">
+        {/* Search Bar */}
+        <div className="search-bar-container">
+          <input
+            type="text"
+            className="search-input"
+            placeholder="🔍 ዜና ይፈልጉ... / Search news..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && (
+            <button 
+              className="clear-search-btn"
+              onClick={() => setSearchQuery('')}
+              title="Clear search"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
         <div className="category-filter">
           {categories.map((cat) => (
             <Link
@@ -72,14 +113,14 @@ const NewsList = () => {
         </div>
 
         {loading ? (
-          <div className="loading">Loading articles...</div>
-        ) : articles.length === 0 ? (
+          <div className="loading">እየተጫነ ነው... / Loading articles...</div>
+        ) : filteredArticles.length === 0 ? (
           <div className="no-articles">
-            <p>No articles found in this category.</p>
+            <p>{searchQuery ? `"${searchQuery}" ተብሎ የተፈለገ ዜና አልተገኘም / No articles found for "${searchQuery}"` : 'በዚህ ምድብ ውስጥ ምንም ዜና የለም / No articles found in this category.'}</p>
           </div>
         ) : (
           <div className="articles-grid">
-            {articles.map((article) => {
+            {filteredArticles.map((article) => {
               // Get thumbnail: use image_url if available, otherwise YouTube thumbnail
               const thumbnail = article.image_url || (article.video_url ? getYouTubeThumbnail(article.video_url) : null);
               

@@ -21,6 +21,11 @@ import ArticleList from './pages/admin/ArticleList';
 import ArticleForm from './pages/admin/ArticleForm';
 import GalleryManager from './pages/admin/GalleryManager';
 import FileManager from './pages/admin/FileManager';
+import InstitutionManager from './pages/admin/InstitutionManager';
+import SocialMediaManager from './pages/admin/SocialMediaManager';
+
+// Institution Pages - Dynamic Route
+import DynamicInstitution from './pages/institutions/DynamicInstitution';
 
 import './App.css';
 
@@ -42,6 +47,9 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/login" element={<Login />} />
 
+              {/* Dynamic Institution Route - Handles ALL institutions by slug */}
+              <Route path="/institutions/:slug" element={<DynamicInstitution />} />
+
               {/* Protected Admin Routes */}
               <Route
                 path="/admin"
@@ -59,6 +67,8 @@ function App() {
                 <Route path="gallery/upload" element={<GalleryManager />} />
                 <Route path="files" element={<FileManager />} />
                 <Route path="files/upload" element={<FileManager />} />
+                <Route path="institutions" element={<InstitutionManager />} />
+                <Route path="social-media" element={<SocialMediaManager />} />
               </Route>
             </Routes>
           </main>

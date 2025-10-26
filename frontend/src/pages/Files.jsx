@@ -9,6 +9,7 @@ const Files = () => {
   const [loading, setLoading] = useState(true);
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchFiles();
@@ -16,7 +17,7 @@ const Files = () => {
 
   useEffect(() => {
     filterFiles();
-  }, [selectedCategory, files]);
+  }, [selectedCategory, files, searchQuery]);
 
   const fetchFiles = async () => {
     try {
@@ -35,11 +36,23 @@ const Files = () => {
   };
 
   const filterFiles = () => {
-    if (selectedCategory === 'all') {
-      setFilteredFiles(files);
-    } else {
-      setFilteredFiles(files.filter(file => file.category === selectedCategory));
+    let filtered = files;
+
+    // Filter by category
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(file => file.category === selectedCategory);
     }
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(file => 
+        file.title?.toLowerCase().includes(query) ||
+        file.description?.toLowerCase().includes(query)
+      );
+    }
+
+    setFilteredFiles(filtered);
   };
 
   const getCategoryIcon = (category) => {
@@ -113,6 +126,28 @@ const Files = () => {
         <p>Files & Forms • Download important documents and forms</p>
       </div>
 
+      {/* Search Bar */}
+      {!loading && files.length > 0 && (
+        <div className="search-bar-container">
+          <input
+            type="text"
+            className="search-input"
+            placeholder="🔍 ፋይል ይፈልጉ... / Search files..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && (
+            <button 
+              className="clear-search-btn"
+              onClick={() => setSearchQuery('')}
+              title="Clear search"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Category Filter */}
       {!loading && files.length > 0 && (
         <div className="category-filter">
@@ -164,8 +199,8 @@ const Files = () => {
         ) : filteredFiles.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">{getCategoryIcon(selectedCategory)}</div>
-            <h2>No {getCategoryLabel(selectedCategory)} Found</h2>
-            <p>There are no files in this category yet.</p>
+            <h2>{searchQuery ? `"${searchQuery}" ተብሎ የተፈለገ ፋይል አልተገኘም` : `No ${getCategoryLabel(selectedCategory)} Found`}</h2>
+            <p>{searchQuery ? `No files match your search.` : 'There are no files in this category yet.'}</p>
           </div>
         ) : (
           <>

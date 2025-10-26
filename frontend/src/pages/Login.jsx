@@ -30,11 +30,11 @@ const Login = () => {
         let errorMessage = signInError.message;
         
         if (errorMessage.includes('Invalid login credentials')) {
-          errorMessage = 'Invalid email or password. Please check and try again.';
+          errorMessage = 'የተሳሳተ ኢሜል ወይም የይለፍ ቃል። እባክዎ ያረጋግጡና እንደገና ይሞክሩ።';
         } else if (errorMessage.includes('Email not confirmed')) {
-          errorMessage = 'Please confirm your email address first.';
+          errorMessage = 'እባክዎ መጀመሪያ የኢሜል አድራሻዎን ያረጋግጡ።';
         } else if (errorMessage.includes('User not found')) {
-          errorMessage = 'No account found with this email.';
+          errorMessage = 'በዚህ ኢሜል ምንም መለያ አልተገኘም።';
         }
         
         setError(errorMessage);
@@ -46,7 +46,7 @@ const Login = () => {
       }
     } catch (err) {
       console.error('Unexpected error during login:', err);
-      setError('Connection error. Please check your internet and try again.');
+      setError('የግንኙነት ስህተት። እባክዎ የኢንተርኔት ግንኙነትዎን ያረጋግጡና እንደገና ይሞክሩ።');
       setLoading(false);
     }
   };
@@ -56,8 +56,8 @@ const Login = () => {
       <div className="login-container">
         <div className="login-card">
           <div className="login-header">
-            <h1>Admin Login</h1>
-            <p>Akaki Kality Subcity Administration</p>
+            <h1>የአስተዳዳሪ መግቢያ</h1>
+            <p>አቃቂ ቃሊቲ ክፍለ ከተማ አስተዳደር</p>
           </div>
 
           {error && (
@@ -68,7 +68,7 @@ const Login = () => {
 
           <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">
-              <label htmlFor="email">Email Address</label>
+              <label htmlFor="email">የኢሜል አድራሻ</label>
               <input
                 type="email"
                 id="email"
@@ -81,25 +81,25 @@ const Login = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">የይለፍ ቃል</label>
               <input
                 type="password"
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
+                placeholder="የይለፍ ቃልዎን ያስገቡ"
                 required
                 disabled={loading}
               />
             </div>
 
             <button type="submit" className="login-button" disabled={loading}>
-              {loading ? 'Signing In...' : 'Sign In'}
+              {loading ? 'እየገባ ነው...' : 'ግባ'}
             </button>
           </form>
 
           <div className="login-footer">
-            <p>For authorized personnel only</p>
+            <p>ለተፈቀደላቸው ሰራተኞች ብቻ</p>
           </div>
         </div>
       </div>

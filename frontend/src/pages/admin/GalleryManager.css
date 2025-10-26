@@ -210,75 +210,182 @@
   background: white;
 }
 
-.images-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 25px;
-}
-
-.gallery-card {
+/* Table Container */
+.table-container {
   background: white;
   border-radius: 12px;
-  overflow: hidden;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* Gallery Table */
+.gallery-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.gallery-table thead {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  color: white;
+}
+
+.gallery-table th {
+  padding: 16px 20px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 3px solid #1e40af;
+}
+
+.gallery-table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
   transition: all 0.3s ease;
 }
 
-.gallery-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+.gallery-table tbody tr:hover {
+  background: #f9fafb;
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.image-container {
-  width: 100%;
-  aspect-ratio: 4/3;
-  overflow: hidden;
+.gallery-table tbody tr:last-child {
+  border-bottom: none;
 }
 
-.image-container img {
-  width: 100%;
-  height: 100%;
+.gallery-table td {
+  padding: 16px 20px;
+  vertical-align: middle;
+}
+
+/* Table Cells */
+.image-cell {
+  width: 120px;
+}
+
+.table-thumbnail {
+  width: 100px;
+  height: 100px;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
-.gallery-card:hover .image-container img {
-  transform: scale(1.05);
+.table-thumbnail:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.card-content {
-  padding: 20px;
+.placeholder-thumbnail-small {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+  border-radius: 8px;
+  font-size: 2rem;
 }
 
-.card-caption {
-  font-size: 1rem;
-  color: #1e3a8a;
+.caption-cell {
   font-weight: 600;
-  margin-bottom: 10px;
+  color: #1e3a8a;
+  font-size: 1rem;
 }
 
-.card-date {
-  display: block;
+.title-cell strong {
+  color: #1e3a8a;
+  font-size: 1.05rem;
+}
+
+.description-cell {
   color: #6b7280;
-  font-size: 0.85rem;
-  margin-bottom: 15px;
+  font-size: 0.9rem;
+  max-width: 300px;
+}
+
+.description-cell em {
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.date-cell {
+  color: #6b7280;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.count-cell {
+  color: #1e40af;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.order-cell {
+  text-align: center;
+  font-weight: 700;
+  color: #6b7280;
+  font-size: 1.1rem;
+}
+
+.actions-cell {
+  width: 220px;
+  text-align: center;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Button active state */
+.btn-edit:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+}
+
+.btn-delete:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+}
+
+/* Ensure buttons in albums table get proper styling */
+.albums-table .btn-edit,
+.albums-table .btn-delete {
+  min-width: 105px;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.albums-table .action-buttons {
+  justify-content: center;
 }
 
 .btn-delete {
-  background-color: #ef4444;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
-  padding: 8px 20px;
+  padding: 8px 16px;
   border-radius: 6px;
-  border: none;
+  border: 2px solid transparent;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  width: 100%;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .btn-delete:hover {
-  background-color: #dc2626;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .loading,
@@ -448,26 +555,68 @@
 }
 
 .btn-edit {
-  flex: 1;
-  background-color: #f59e0b;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
-  padding: 8px 20px;
+  padding: 8px 16px;
   border-radius: 6px;
-  border: none;
+  border: 2px solid transparent;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .btn-edit:hover {
-  background-color: #d97706;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
-.btn-delete {
-  flex: 1;
+.text-muted {
+  color: #9ca3af;
 }
 
+/* Tablet Responsive (768px - 1024px) */
+@media screen and (max-width: 1024px) and (min-width: 769px) {
+  .gallery-table th,
+  .gallery-table td {
+    padding: 14px 16px;
+    font-size: 0.9rem;
+  }
+
+  .table-thumbnail {
+    width: 80px;
+    height: 80px;
+  }
+
+  .placeholder-thumbnail-small {
+    width: 80px;
+    height: 80px;
+    font-size: 1.8rem;
+  }
+
+  .action-buttons {
+    gap: 8px;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    min-width: 95px;
+  }
+
+  .description-cell {
+    max-width: 250px;
+  }
+}
+
+/* Mobile Responsive (below 768px) */
 @media screen and (max-width: 768px) {
   .manager-header h1 {
     font-size: 2rem;
@@ -479,10 +628,6 @@
 
   .header-buttons button {
     flex: 1;
-  }
-
-  .images-grid {
-    grid-template-columns: 1fr;
   }
 
   .upload-form {
@@ -514,6 +659,77 @@
   .preview-name {
     font-size: 0.7rem;
     padding: 6px;
+  }
+
+  /* Table Responsive */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .gallery-table {
+    min-width: 700px;
+  }
+
+  .gallery-table th,
+  .gallery-table td {
+    padding: 12px 10px;
+    font-size: 0.85rem;
+  }
+
+  .table-thumbnail {
+    width: 60px;
+    height: 60px;
+  }
+
+  .placeholder-thumbnail-small {
+    width: 60px;
+    height: 60px;
+    font-size: 1.2rem;
+  }
+
+  .image-cell {
+    width: 80px;
+  }
+
+  .description-cell {
+    max-width: 150px;
+    font-size: 0.8rem;
+  }
+
+  .title-cell strong {
+    font-size: 0.9rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    width: 100%;
+    font-size: 0.8rem;
+    padding: 8px 10px;
+    justify-content: center;
+    min-width: 90px;
+  }
+  
+  .actions-cell {
+    width: auto;
+    min-width: 110px;
+  }
+
+  /* Albums table specific mobile styles */
+  .albums-table .description-cell {
+    max-width: 120px;
+    font-size: 0.75rem;
+  }
+
+  .albums-table .count-cell,
+  .albums-table .order-cell {
+    font-size: 0.8rem;
   }
 }
 

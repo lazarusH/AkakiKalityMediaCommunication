@@ -10,6 +10,7 @@ import './Home.css';
 const Home = () => {
   const [latestNews, setLatestNews] = useState([]);
   const [popularNews, setPopularNews] = useState([]);
+  const [filteredNews, setFilteredNews] = useState([]);
   const [trendingNews, setTrendingNews] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,6 +21,10 @@ const Home = () => {
   useEffect(() => {
     fetchAllNews();
   }, []);
+
+  useEffect(() => {
+    filterNews();
+  }, [searchQuery, popularNews]);
 
   const fetchAllNews = async () => {
     try {
@@ -42,6 +47,7 @@ const Home = () => {
 
       if (popularError) throw popularError;
       setPopularNews(popular || []);
+      setFilteredNews(popular || []);
 
       // Fetch trending news for sidebar (top 5 most recent)
       const { data: trending, error: trendingError } = await supabase
@@ -68,11 +74,25 @@ const Home = () => {
     }
   };
 
+  const filterNews = () => {
+    if (!searchQuery.trim()) {
+      setFilteredNews(popularNews);
+      return;
+    }
+
+    const query = searchQuery.toLowerCase();
+    const filtered = popularNews.filter(article => 
+      article.title?.toLowerCase().includes(query) ||
+      article.content?.toLowerCase().includes(query) ||
+      article.category?.toLowerCase().includes(query)
+    );
+    setFilteredNews(filtered);
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/news/all?search=${encodeURIComponent(searchQuery)}`);
-    }
+    // Search filters locally now
+    filterNews();
   };
 
   const handleCategoryFilter = (category) => {
@@ -110,11 +130,21 @@ const Home = () => {
                 </svg>
                 <input
                   type="text"
-                  placeholder="ዜና ይፈልጉ... / Search news..."
+                  placeholder="🔍 ዜና ይፈልጉ... / Search news..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="search-input"
                 />
+                {searchQuery && (
+                  <button 
+                    type="button"
+                    className="clear-hero-search-btn"
+                    onClick={() => setSearchQuery('')}
+                    title="Clear search"
+                  >
+                    ✕
+                  </button>
+                )}
                 <button type="submit" className="search-button">
                   ፈልግ / Search
                 </button>
@@ -164,15 +194,28 @@ const Home = () => {
                   <div className="section-header">
                     <h2 className="section-title">
                       <span className="title-icon">📰</span>
-                      ታዋቂ ዜናዎች / Popular News
+                      {searchQuery ? `የፍለጋ ውጤቶች / Search Results (${filteredNews.length})` : 'ታዋቂ ዜናዎች / Popular News'}
                     </h2>
                     <Link to="/news/all" className="view-all-link">
                       ሁሉንም ይመልከቱ →
                     </Link>
                   </div>
                   
+                  {filteredNews.length === 0 && searchQuery ? (
+                    <div className="no-results">
+                      <div className="no-results-icon">🔍</div>
+                      <h3>ምንም ዜና አልተገኘም / No news found</h3>
+                      <p>"{searchQuery}" ተብሎ የተፈለገ ዜና አልተገኘም / No articles found for "{searchQuery}"</p>
+                      <button 
+                        className="clear-search-button"
+                        onClick={() => setSearchQuery('')}
+                      >
+                        ፍለጋን አጽዳ / Clear search
+                      </button>
+                    </div>
+                  ) : (
                   <div className="news-grid">
-                    {popularNews.map((article) => {
+                    {filteredNews.map((article) => {
                       const thumbnail = article.image_url || 
                         (article.video_url ? getYouTubeThumbnail(article.video_url) : null);
                       
@@ -207,6 +250,7 @@ const Home = () => {
                       );
                     })}
                   </div>
+                  )}
                 </section>
               </div>
 

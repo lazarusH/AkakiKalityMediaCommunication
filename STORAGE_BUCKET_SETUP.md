@@ -151,3 +151,4 @@ Your app uses these exact names:
 2. Check RLS policies are correct
 3. Make sure buckets have INSERT policy for authenticated users
 
+

@@ -6,17 +6,25 @@ import './Gallery.css';
 
 const Gallery = () => {
   const [images, setImages] = useState([]);
+  const [filteredImages, setFilteredImages] = useState([]);
   const [flickrAlbums, setFlickrAlbums] = useState([]);
+  const [filteredAlbums, setFilteredAlbums] = useState([]);
   const [selectedAlbum, setSelectedAlbum] = useState(null);
   const [albumPhotos, setAlbumPhotos] = useState([]);
+  const [filteredAlbumPhotos, setFilteredAlbumPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingPhotos, setLoadingPhotos] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchImages();
     fetchFlickrAlbums();
   }, []);
+
+  useEffect(() => {
+    filterContent();
+  }, [searchQuery, images, flickrAlbums, albumPhotos]);
 
   const fetchImages = async () => {
     try {
@@ -27,6 +35,7 @@ const Gallery = () => {
 
       if (error) throw error;
       setImages(data || []);
+      setFilteredImages(data || []);
     } catch (error) {
       console.error('Error fetching images:', error);
     }
@@ -59,11 +68,42 @@ const Gallery = () => {
       );
       
       setFlickrAlbums(albumsWithCovers);
+      setFilteredAlbums(albumsWithCovers);
     } catch (error) {
       console.error('Error fetching Flickr albums:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const filterContent = () => {
+    if (!searchQuery.trim()) {
+      setFilteredImages(images);
+      setFilteredAlbums(flickrAlbums);
+      setFilteredAlbumPhotos(albumPhotos);
+      return;
+    }
+
+    const query = searchQuery.toLowerCase();
+
+    // Filter images
+    const filtImgs = images.filter(img => 
+      img.caption?.toLowerCase().includes(query)
+    );
+    setFilteredImages(filtImgs);
+
+    // Filter albums
+    const filtAlbums = flickrAlbums.filter(album => 
+      album.title?.toLowerCase().includes(query) ||
+      album.description?.toLowerCase().includes(query)
+    );
+    setFilteredAlbums(filtAlbums);
+
+    // Filter album photos
+    const filtPhotos = albumPhotos.filter(photo =>
+      photo.title?.toLowerCase().includes(query)
+    );
+    setFilteredAlbumPhotos(filtPhotos);
   };
 
   const openAlbum = async (album) => {
@@ -74,6 +114,7 @@ const Gallery = () => {
     try {
       const photos = await fetchFlickrAlbumPhotos(album.flickr_url);
       setAlbumPhotos(photos);
+      setFilteredAlbumPhotos(photos);
     } catch (error) {
       console.error(`Error loading album "${album.title}":`, error.message);
       alert('Failed to load album photos. Please try again.');
@@ -98,13 +139,35 @@ const Gallery = () => {
   return (
     <div className="gallery-page">
       <div className="gallery-header">
-        <h1>Photo Gallery</h1>
-        <p>Browse through our collection of memorable moments and events</p>
+        <h1>የምስል ማስቀመጫ / Photo Gallery</h1>
+        <p>ትዝታዎችን እና ዝግጅቶችን ይመልከቱ / Browse through our collection of memorable moments and events</p>
       </div>
+
+      {/* Search Bar */}
+      {!loading && (images.length > 0 || flickrAlbums.length > 0) && (
+        <div className="search-bar-container">
+          <input
+            type="text"
+            className="search-input"
+            placeholder="🔍 ምስል ወይም አልበም ይፈልጉ... / Search photos or albums..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && (
+            <button 
+              className="clear-search-btn"
+              onClick={() => setSearchQuery('')}
+              title="Clear search"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="gallery-container">
         {loading ? (
-          <div className="loading">Loading gallery...</div>
+          <div className="loading">እየተጫነ ነው... / Loading gallery...</div>
         ) : (
           <>
             {/* Show Album View or Photos View */}
@@ -112,11 +175,11 @@ const Gallery = () => {
               /* Albums Grid View */
               <>
                 {/* Flickr Albums */}
-                {flickrAlbums.length > 0 && (
+                {filteredAlbums.length > 0 && (
                   <div className="gallery-section">
-                    <h2 className="section-header">Albums</h2>
+                    <h2 className="section-header">አልበሞች / Albums</h2>
                     <div className="gallery-grid albums-grid">
-                      {flickrAlbums.map((album) => (
+                      {filteredAlbums.map((album) => (
                         <div 
                           key={album.id} 
                           className="album-card" 
@@ -145,11 +208,11 @@ const Gallery = () => {
                 )}
 
                 {/* Uploaded Images Section */}
-                {images.length > 0 && (
+                {filteredImages.length > 0 && (
                   <div className="gallery-section">
-                    <h2 className="section-header">Recent Photos</h2>
+                    <h2 className="section-header">የቅርብ ጊዜ ፎቶዎች / Recent Photos</h2>
                     <div className="gallery-grid">
-                      {images.map((image) => (
+                      {filteredImages.map((image) => (
                         <div key={image.id} className="gallery-item" onClick={() => openModal(image)}>
                           <img src={image.image_url} alt={image.caption} loading="lazy" />
                           <div className="gallery-overlay">
@@ -162,17 +225,17 @@ const Gallery = () => {
                   </div>
                 )}
 
-                {images.length === 0 && flickrAlbums.length === 0 && (
+                {(images.length === 0 && flickrAlbums.length === 0) || (filteredImages.length === 0 && filteredAlbums.length === 0 && searchQuery) ? (
                   <div className="no-images">
-                    <p>No images available yet.</p>
+                    <p>{searchQuery ? `"${searchQuery}" ተብሎ የተፈለገ ምስል ወይም አልበም አልተገኘም / No images or albums found for "${searchQuery}"` : 'ገና ምንም ምስል የለም / No images available yet.'}</p>
                   </div>
-                )}
+                ) : null}
               </>
             ) : (
               /* Album Photos View */
               <div className="album-view">
                 <button className="back-button" onClick={closeAlbum}>
-                  ← Back to Albums
+                  ← ወደ አልበሞች ተመለስ / Back to Albums
                 </button>
                 
                 <div className="album-header-view">
@@ -181,10 +244,14 @@ const Gallery = () => {
                 </div>
 
                 {loadingPhotos ? (
-                  <div className="loading">Loading photos...</div>
+                  <div className="loading">እየተጫነ ነው... / Loading photos...</div>
+                ) : filteredAlbumPhotos.length === 0 ? (
+                  <div className="no-images">
+                    <p>{searchQuery ? `"${searchQuery}" ተብሎ የተፈለገ ፎቶ አልተገኘም / No photos found for "${searchQuery}"` : 'ምንም ፎቶ የለም / No photos available.'}</p>
+                  </div>
                 ) : (
                   <div className="gallery-grid">
-                    {albumPhotos.map((photo, index) => (
+                    {filteredAlbumPhotos.map((photo, index) => (
                       <div 
                         key={photo.id || index} 
                         className="gallery-item" 

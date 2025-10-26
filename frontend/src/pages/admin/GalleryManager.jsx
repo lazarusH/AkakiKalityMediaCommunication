@@ -149,7 +149,7 @@ const GalleryManager = () => {
   };
 
   const handleDelete = async (id, imageUrl, caption) => {
-    if (!window.confirm(`Are you sure you want to delete "${caption}"?`)) {
+    if (!window.confirm(`"${caption}" የሚለውን ምስል መሰረዝ ይፈልጋሉ? / Are you sure you want to delete "${caption}"?`)) {
       return;
     }
 
@@ -162,10 +162,10 @@ const GalleryManager = () => {
       if (error) throw error;
 
       setImages(images.filter(img => img.id !== id));
-      alert('Image deleted successfully!');
+      alert('✅ ምስሉ በተሳካ ሁኔታ ተሰርዟል! / Image deleted successfully!');
     } catch (error) {
       console.error('Error deleting image:', error);
-      alert('Failed to delete image. Please try again.');
+      alert('❌ ምስሉን መሰረዝ አልተሳካም። እባክዎ እንደገና ይሞክሩ። / Failed to delete image. Please try again.');
     }
   };
 
@@ -247,10 +247,12 @@ const GalleryManager = () => {
     setFlickrThumbnail(album.thumbnail_url || '');
     setFlickrPhotoCount(album.photo_count?.toString() || '');
     setShowFlickrForm(true);
+    // Scroll to the top to show the edit form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDeleteFlickr = async (id, title) => {
-    if (!window.confirm(`Are you sure you want to delete "${title}"?`)) {
+    if (!window.confirm(`"${title}" የሚለውን አልበም መሰረዝ ይፈልጋሉ? / Are you sure you want to delete "${title}"?`)) {
       return;
     }
 
@@ -263,10 +265,10 @@ const GalleryManager = () => {
       if (error) throw error;
 
       setFlickrAlbums(flickrAlbums.filter(album => album.id !== id));
-      alert('Album deleted successfully!');
+      alert('✅ አልበሙ በተሳካ ሁኔታ ተሰርዟል! / Album deleted successfully!');
     } catch (error) {
       console.error('Error deleting album:', error);
-      alert('Failed to delete album. Please try again.');
+      alert('❌ አልበሙን መሰረዝ አልተሳካም። እባክዎ እንደገና ይሞክሩ። / Failed to delete album. Please try again.');
     }
   };
 
@@ -282,7 +284,7 @@ const GalleryManager = () => {
   return (
     <div className="gallery-manager">
       <div className="manager-header">
-        <h1>Manage Gallery</h1>
+        <h1>የምስል ማስቀመጫ አስተዳደር / Manage Gallery</h1>
         <div className="header-buttons">
           <button 
             onClick={() => {
@@ -291,7 +293,7 @@ const GalleryManager = () => {
             }}
             className="btn-primary"
           >
-            {showUploadForm ? 'Cancel' : '+ Upload Images'}
+            {showUploadForm ? '❌ ሰርዝ / Cancel' : '📤 ምስል ጫን / Upload Images'}
           </button>
           <button 
             onClick={() => {
@@ -308,32 +310,32 @@ const GalleryManager = () => {
             }}
             className="btn-secondary"
           >
-            {showFlickrForm ? 'Cancel' : '+ Add Album'}
+            {showFlickrForm ? '❌ ሰርዝ / Cancel' : '➕ አልበም ጨምር / Add Album'}
           </button>
         </div>
       </div>
 
       {showUploadForm && (
         <form onSubmit={handleUpload} className="upload-form">
-          <h3>Upload Images</h3>
-          <p className="form-help">You can select multiple images to upload at once</p>
+          <h3>📤 ምስሎችን ይጫኑ / Upload Images</h3>
+          <p className="form-help">በአንድ ጊዜ በርካታ ምስሎችን መምረጥ ይችላሉ / You can select multiple images to upload at once</p>
           
           <div className="form-group">
-            <label htmlFor="caption">Caption *</label>
+            <label htmlFor="caption">መግለጫ / Caption *</label>
             <input
               type="text"
               id="caption"
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
-              placeholder="Enter caption (will be applied to all images)"
+              placeholder="መግለጫ ያስገቡ / Enter caption (will be applied to all images)"
               required
               disabled={uploading}
             />
-            <small>For multiple images, each will be numbered automatically</small>
+            <small>ለብዙ ምስሎች ቁጥር በራስ-ሰር ይመደባል / For multiple images, each will be numbered automatically</small>
           </div>
 
           <div className="form-group">
-            <label htmlFor="image">Images * (Multiple selection supported)</label>
+            <label htmlFor="image">ምስሎች / Images * (በርካታ ምርጫ ይደገፋል)</label>
             <input
               type="file"
               id="image"
@@ -343,12 +345,12 @@ const GalleryManager = () => {
               required
               disabled={uploading}
             />
-            <small>Hold Ctrl (Cmd on Mac) to select multiple images</small>
+            <small>ብዙ ምስሎችን ለመምረጥ Ctrl (በMac ላይ Cmd) ይጫኑ / Hold Ctrl (Cmd on Mac) to select multiple images</small>
           </div>
 
           {imagePreviews.length > 0 && (
             <div className="image-previews-grid">
-              <p className="preview-count">Selected: {imagePreviews.length} image{imagePreviews.length > 1 ? 's' : ''}</p>
+              <p className="preview-count">የተመረጡ / Selected: {imagePreviews.length} {imagePreviews.length > 1 ? 'ምስሎች / images' : 'ምስል / image'}</p>
               {imagePreviews.map((preview, index) => (
                 <div key={index} className="image-preview-item">
                   <img src={preview.url} alt={`Preview ${index + 1}`} />
@@ -367,31 +369,34 @@ const GalleryManager = () => {
           )}
 
           <button type="submit" className="btn-primary" disabled={uploading}>
-            {uploading ? `Uploading ${imageFiles.length} image${imageFiles.length > 1 ? 's' : ''}...` : `Upload ${imageFiles.length > 0 ? imageFiles.length : ''} Image${imageFiles.length > 1 ? 's' : ''}`}
+            {uploading 
+              ? `እየጫነ ነው ${imageFiles.length} ${imageFiles.length > 1 ? 'ምስሎችን' : 'ምስልን'}... / Uploading...` 
+              : `${imageFiles.length > 0 ? imageFiles.length : ''} ${imageFiles.length > 1 ? 'ምስሎችን' : 'ምስልን'} ጫን / Upload`
+            }
           </button>
         </form>
       )}
 
       {showFlickrForm && (
         <form onSubmit={handleFlickrSubmit} className="upload-form flickr-form" style={{display: 'block', backgroundColor: 'white'}}>
-          <h3>{editingFlickrId ? 'Edit Album' : 'Add Album'}</h3>
-          <p className="form-help">Add an album from Flickr</p>
+          <h3>{editingFlickrId ? '✏️ አልበም አርትዕ / Edit Album' : '➕ አልበም ጨምር / Add Album'}</h3>
+          <p className="form-help">ከFlickr አልበም ያክሉ / Add an album from Flickr</p>
           
           <div className="form-group">
-            <label htmlFor="flickr-title">Album Title *</label>
+            <label htmlFor="flickr-title">የአልበም አርዕስት / Album Title *</label>
             <input
               type="text"
               id="flickr-title"
               value={flickrTitle}
               onChange={(e) => setFlickrTitle(e.target.value)}
-              placeholder="e.g., Summer Events 2024"
+              placeholder="ለምሳሌ፣ የበጋ ዝግጅቶች 2024 / e.g., Summer Events 2024"
               required
               disabled={uploading}
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="flickr-url">Flickr Album URL *</label>
+            <label htmlFor="flickr-url">Flickr አልበም URL *</label>
             <input
               type="url"
               id="flickr-url"
@@ -401,23 +406,23 @@ const GalleryManager = () => {
               required
               disabled={uploading}
             />
-            <small>⚠️ Important: Click on a specific album first, then copy the URL (should contain numbers at the end)</small>
+            <small>⚠️ አስፈላጊ / Important: በተወሰነ አልበም ላይ መጀመሪያ ጠቅ ያድርጉ፣ ከዚያ URL ን ይቅዱ / Click on a specific album first, then copy the URL (should contain numbers at the end)</small>
           </div>
 
           <div className="form-group">
-            <label htmlFor="flickr-description">Description (Optional)</label>
+            <label htmlFor="flickr-description">መግለጫ / Description (አማራጭ / Optional)</label>
             <textarea
               id="flickr-description"
               value={flickrDescription}
               onChange={(e) => setFlickrDescription(e.target.value)}
-              placeholder="Brief description of the album"
+              placeholder="የአልበሙን አጭር መግለጫ / Brief description of the album"
               rows="3"
               disabled={uploading}
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="flickr-thumbnail">Thumbnail URL (Optional)</label>
+            <label htmlFor="flickr-thumbnail">ምስል URL / Thumbnail URL (አማራጭ / Optional)</label>
             <input
               type="url"
               id="flickr-thumbnail"
@@ -426,17 +431,17 @@ const GalleryManager = () => {
               placeholder="https://live.staticflickr.com/..."
               disabled={uploading}
             />
-            <small>Right-click a photo from the album → Copy image address</small>
+            <small>በፎቶው ላይ በቀኝ ጠቅ ያድርጉ → የምስል አድራሻን ይቅዱ / Right-click a photo from the album → Copy image address</small>
           </div>
 
           <div className="form-group">
-            <label htmlFor="flickr-count">Number of Photos (Optional)</label>
+            <label htmlFor="flickr-count">የፎቶዎች ብዛት / Number of Photos (አማራጭ / Optional)</label>
             <input
               type="number"
               id="flickr-count"
               value={flickrPhotoCount}
               onChange={(e) => setFlickrPhotoCount(e.target.value)}
-              placeholder="e.g., 25"
+              placeholder="ለምሳሌ 25 / e.g., 25"
               min="0"
               disabled={uploading}
             />
@@ -444,14 +449,17 @@ const GalleryManager = () => {
 
           <div className="form-buttons">
             <button type="submit" className="btn-primary" disabled={uploading}>
-              {uploading ? 'Saving...' : (editingFlickrId ? 'Update Album' : 'Add Album')}
+              {uploading 
+                ? 'እያስቀመጠ ነው... / Saving...' 
+                : (editingFlickrId ? '💾 አልበምን አዘምን / Update Album' : '➕ አልበም ጨምር / Add Album')
+              }
             </button>
             {editingFlickrId && (
               <button type="button" onClick={() => {
                 resetFlickrForm();
                 setShowFlickrForm(false);
               }} className="btn-cancel">
-                Cancel Edit
+                ❌ አርትዕ ሰርዝ / Cancel Edit
               </button>
             )}
           </div>
@@ -459,87 +467,120 @@ const GalleryManager = () => {
       )}
 
       <div className="section">
-        <h2 className="section-title">📷 Uploaded Images</h2>
+        <h2 className="section-title">📷 Uploaded Images ({images.length})</h2>
         {loading ? (
-          <div className="loading">Loading gallery...</div>
+          <div className="loading">እየተጫነ ነው... / Loading gallery...</div>
         ) : images.length === 0 ? (
           <div className="no-data">
-            <p>No images yet. Upload your first image!</p>
+            <p>ገና ምንም ምስል የለም። የመጀመሪያውን ምስል ይጫኑ! / No images yet. Upload your first image!</p>
           </div>
         ) : (
-          <div className="images-grid">
-            {images.map((image) => (
-              <div key={image.id} className="gallery-card">
-                <div className="image-container">
-                  <img src={image.image_url} alt={image.caption} />
-                </div>
-                <div className="card-content">
-                  <p className="card-caption">{image.caption}</p>
-                  <span className="card-date">
-                    {new Date(image.uploaded_at).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
-                  </span>
-                  <button
-                    onClick={() => handleDelete(image.id, image.image_url, image.caption)}
-                    className="btn-delete"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
+          <div className="table-container">
+            <table className="gallery-table">
+              <thead>
+                <tr>
+                  <th>ምስል / Image</th>
+                  <th>መግለጫ / Caption</th>
+                  <th>የተጫነበት ቀን / Upload Date</th>
+                  <th>እርምጃዎች / Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {images.map((image) => (
+                  <tr key={image.id}>
+                    <td className="image-cell">
+                      <img src={image.image_url} alt={image.caption} className="table-thumbnail" />
+                    </td>
+                    <td className="caption-cell">{image.caption}</td>
+                    <td className="date-cell">
+                      {new Date(image.uploaded_at).toLocaleDateString('am-ET', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </td>
+                    <td className="actions-cell">
+                      <button
+                        onClick={() => handleDelete(image.id, image.image_url, image.caption)}
+                        className="btn-delete"
+                        title="ሰርዝ / Delete"
+                      >
+                        🗑️ ሰርዝ
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
 
       <div className="section flickr-section">
-        <h2 className="section-title">📁 Photo Albums</h2>
+        <h2 className="section-title">📁 የፎቶ አልበሞች / Photo Albums ({flickrAlbums.length})</h2>
         {flickrAlbums.length === 0 ? (
           <div className="no-data">
-            <p>No albums added yet. Click "+ Add Album" to get started!</p>
+            <p>ገና ምንም አልበም አልተጨመረም። "+ Add Album" የሚለውን ጠቅ አድርገው ይጀምሩ! / No albums added yet. Click "+ Add Album" to get started!</p>
           </div>
         ) : (
-          <div className="images-grid">
-            {flickrAlbums.map((album) => (
-              <div key={album.id} className="gallery-card flickr-card">
-                <div className="image-container">
-                  {album.thumbnail_url ? (
-                    <img src={album.thumbnail_url} alt={album.title} />
-                  ) : (
-                    <div className="placeholder-thumbnail">
-                      <span>📁</span>
-                      <p>No thumbnail</p>
-                    </div>
-                  )}
-                </div>
-                <div className="card-content">
-                  <p className="card-caption">{album.title}</p>
-                  {album.description && (
-                    <p className="card-description">{album.description}</p>
-                  )}
-                  {album.photo_count > 0 && (
-                    <span className="photo-count">{album.photo_count} photos</span>
-                  )}
-                  <div className="card-actions">
-                    <button
-                      onClick={() => handleEditFlickr(album)}
-                      className="btn-edit"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteFlickr(album.id, album.title)}
-                      className="btn-delete"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="table-container">
+            <table className="gallery-table albums-table">
+              <thead>
+                <tr>
+                  <th>ምስል / Thumbnail</th>
+                  <th>አርዕስት / Title</th>
+                  <th>መግለጫ / Description</th>
+                  <th>የፎቶ ብዛት / Photos</th>
+                  <th>የአሰላለፍ ቁጥር / Order</th>
+                  <th>እርምጃዎች / Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {flickrAlbums.map((album) => (
+                  <tr key={album.id}>
+                    <td className="image-cell">
+                      {album.thumbnail_url ? (
+                        <img src={album.thumbnail_url} alt={album.title} className="table-thumbnail" />
+                      ) : (
+                        <div className="placeholder-thumbnail-small">
+                          <span>📁</span>
+                        </div>
+                      )}
+                    </td>
+                    <td className="title-cell">
+                      <strong>{album.title}</strong>
+                    </td>
+                    <td className="description-cell">
+                      {album.description || <em className="text-muted">No description</em>}
+                    </td>
+                    <td className="count-cell">
+                      {album.photo_count > 0 ? `${album.photo_count} photos` : '-'}
+                    </td>
+                    <td className="order-cell">
+                      {album.display_order}
+                    </td>
+                    <td className="actions-cell">
+                      <div className="action-buttons">
+                        <button
+                          onClick={() => handleEditFlickr(album)}
+                          className="btn-edit"
+                          title="አርትዕ / Edit"
+                        >
+                          ✏️ አርትዕ
+                        </button>
+                        <button
+                          onClick={() => handleDeleteFlickr(album.id, album.title)}
+                          className="btn-delete"
+                          title="ሰርዝ / Delete"
+                        >
+                          🗑️ ሰርዝ
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>

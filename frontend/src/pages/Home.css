@@ -197,6 +197,28 @@
   color: var(--text-gray);
 }
 
+.clear-hero-search-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.clear-hero-search-btn:hover {
+  background: #c82333;
+  transform: scale(1.1);
+}
+
 .search-button {
   background: var(--primary-blue);
   color: white;
@@ -333,6 +355,52 @@
 /* News Grid */
 .news-section {
   margin-bottom: 50px;
+}
+
+/* No Results State */
+.no-results {
+  text-align: center;
+  padding: 80px 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.no-results-icon {
+  font-size: 5rem;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.no-results h3 {
+  font-size: 1.8rem;
+  color: var(--text-dark);
+  margin-bottom: 15px;
+}
+
+.no-results p {
+  font-size: 1.1rem;
+  color: var(--text-gray);
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.clear-search-button {
+  background: var(--primary-blue);
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.clear-search-button:hover {
+  background: #0d3a66;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(26, 84, 144, 0.3);
 }
 
 .news-grid {

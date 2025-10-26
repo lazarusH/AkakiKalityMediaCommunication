@@ -61,6 +61,7 @@
   display: flex;
   gap: 15px;
   margin-top: 15px;
+  flex-wrap: wrap;
 }
 
 .social-links a {
@@ -77,10 +78,22 @@
   font-weight: bold;
 }
 
+.social-links a.social-icon {
+  width: 45px;
+  height: 45px;
+}
+
+.social-links a.social-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
 .social-links a:hover {
   background-color: #fbbf24;
   color: #1e3a8a;
-  transform: translateY(-3px);
+  transform: translateY(-3px) scale(1.1);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
 }
 
 .footer-bottom {
