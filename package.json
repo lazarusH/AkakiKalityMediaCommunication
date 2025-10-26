@@ -5,11 +5,11 @@
   "author": "Alazar Tesema",
   "license": "PROPRIETARY",
   "scripts": {
-    "install": "cd frontend && npm install",
+    "install": "cd frontend && npm install --legacy-peer-deps",
     "dev": "cd frontend && npm run dev",
-    "build": "cd frontend && npm install && npm run build",
+    "build": "cd frontend && npm install --legacy-peer-deps && npm run build",
     "preview": "cd frontend && npm run preview",
-    "setup": "cd frontend && npm install"
+    "setup": "cd frontend && npm install --legacy-peer-deps"
   },
   "keywords": [
     "news",
