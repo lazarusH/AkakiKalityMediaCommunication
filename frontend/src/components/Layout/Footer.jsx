@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import logo from '../../assets/logo.png';
 import './Footer.css';
 
 const socialIcons = {
@@ -76,9 +77,14 @@ const Footer = () => {
     <footer className="footer">
       <div className="footer-container">
         <div className="footer-section">
+          <div className="footer-brand">
+            <img src={logo} alt="Akaki Kality" className="footer-logo" />
+            <div>
           <h3>አቃቂ ቃሊቲ ክፍለ ከተማ ኮሙኒኬሽን ጽ/ቤት</h3>
           <h4>Akaki Kality Subcity</h4>
           <p>ለማህበረሰቡ በግልፅነት እና በላቀ አገልግሎት እናገለግላለን</p>
+            </div>
+          </div>
         </div>
         
         <div className="footer-section">
@@ -90,14 +96,7 @@ const Footer = () => {
             <li><a href="/about">ስለ እኛ</a></li>
           </ul>
         </div>
-        
-        <div className="footer-section">
-          <h3>የመገኛ አድራሻ</h3>
-          <p>📍 አዲስ አበባ፣ ኢትዮጵያ</p>
-          <p>📞 +251-11-XXX-XXXX</p>
-          <p>✉️ info@akakikality.gov.et</p>
-        </div>
-        
+      
         <div className="footer-section">
           <h3>በማህበራዊ ሚዲያ ይከተሉን</h3>
           {socialLinks.length > 0 ? (
@@ -125,7 +124,7 @@ const Footer = () => {
       </div>
       
       <div className="footer-bottom">
-        <p>&copy; {new Date().getFullYear()} አቃቂ ቃሊቲ ክፍለ ከተማ። ሁሉም መብት የተጠበቀ ነው።</p>
+        <p>&copy; {new Date().getFullYear()} አቃቂ ቃሊቲ ክፍለ ከተማ የኮሙኒኬሽን ጽ/ቤት። ሁሉም መብት የተጠበቀ ነው።</p>
       </div>
     </footer>
   );

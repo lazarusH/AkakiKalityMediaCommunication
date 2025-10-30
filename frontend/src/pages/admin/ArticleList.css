@@ -194,11 +194,23 @@
 
   .filter-section {
     width: 100%;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
   }
 
   .filter-btn {
-    flex: 1;
+    width: 100%;
     text-align: center;
+    padding: 10px 12px;
+    grid-column: span 1;
+  }
+}
+
+/* Extra-small phones: use 2 columns */
+@media screen and (max-width: 420px) {
+  .filter-section {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 

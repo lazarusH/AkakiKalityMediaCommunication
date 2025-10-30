@@ -181,7 +181,7 @@ git push -u origin main
    - Should redirect to `/admin`
 
 3. **Create Test Article**
-   - Click "New Article"
+   - Click "Add News"
    - Fill in details
    - Upload an image
    - Publish

@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useToast } from '../../contexts/ToastContext';
+import ConfirmModal from '../../components/ConfirmModal';
 import { supabase } from '../../lib/supabase';
 import './ArticleList.css';
 
 const ArticleList = () => {
+  const { toast } = useToast();
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   useEffect(() => {
     fetchArticles();
@@ -43,33 +47,33 @@ const ArticleList = () => {
     }
   };
 
-  const handleDelete = async (id, title) => {
-    if (!window.confirm(`Are you sure you want to delete "${title}"?`)) {
-      return;
-    }
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
 
     try {
       const { error } = await supabase
         .from('articles')
         .delete()
-        .eq('id', id);
+        .eq('id', confirmDelete.id);
 
       if (error) throw error;
       
-      setArticles(articles.filter(a => a.id !== id));
-      alert('Article deleted successfully!');
+      setArticles(articles.filter(a => a.id !== confirmDelete.id));
+      toast.success('Article deleted successfully!');
     } catch (error) {
       console.error('Error deleting article:', error);
-      alert('Failed to delete article. Please try again.');
+      toast.error('Failed to delete article. Please try again.');
+    } finally {
+      setConfirmDelete(null);
     }
   };
 
   return (
     <div className="article-list-admin">
       <div className="list-header">
-        <h1>Manage Articles</h1>
+        <h1>Manage News</h1>
         <Link to="/admin/articles/new" className="btn-primary">
-          + New Article
+          + Add News
         </Link>
       </div>
 
@@ -78,25 +82,37 @@ const ArticleList = () => {
           className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
           onClick={() => setFilter('all')}
         >
-          All
+          ሁሉም / All
         </button>
         <button 
-          className={`filter-btn ${filter === 'Local' ? 'active' : ''}`}
-          onClick={() => setFilter('Local')}
+          className={`filter-btn ${filter === 'የሃገር' ? 'active' : ''}`}
+          onClick={() => setFilter('የሃገር')}
         >
-          Local
+          የሃገር
         </button>
         <button 
-          className={`filter-btn ${filter === 'National' ? 'active' : ''}`}
-          onClick={() => setFilter('National')}
+          className={`filter-btn ${filter === 'የከተማ' ? 'active' : ''}`}
+          onClick={() => setFilter('የከተማ')}
         >
-          National
+          የከተማ
         </button>
         <button 
-          className={`filter-btn ${filter === 'Uncategorized' ? 'active' : ''}`}
-          onClick={() => setFilter('Uncategorized')}
+          className={`filter-btn ${filter === 'የክፍለ-ከተማ' ? 'active' : ''}`}
+          onClick={() => setFilter('የክፍለ-ከተማ')}
         >
-          Uncategorized
+          የክፍለ-ከተማ
+        </button>
+        <button 
+          className={`filter-btn ${filter === 'የወረዳ' ? 'active' : ''}`}
+          onClick={() => setFilter('የወረዳ')}
+        >
+          የወረዳ
+        </button>
+        <button 
+          className={`filter-btn ${filter === 'ያልተመደበ' ? 'active' : ''}`}
+          onClick={() => setFilter('ያልተመደበ')}
+        >
+          ያልተመደበ
         </button>
       </div>
 
@@ -143,7 +159,7 @@ const ArticleList = () => {
                       Edit
                     </Link>
                     <button 
-                      onClick={() => handleDelete(article.id, article.title)}
+                      onClick={() => setConfirmDelete({ id: article.id, title: article.title })}
                       className="btn-delete"
                     >
                       Delete
@@ -155,6 +171,16 @@ const ArticleList = () => {
           </table>
         </div>
       )}
+      <ConfirmModal
+        isOpen={!!confirmDelete}
+        onClose={() => setConfirmDelete(null)}
+        onConfirm={handleDelete}
+        title="Delete Article?"
+        message={`Are you sure you want to delete "${confirmDelete?.title}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        icon="🗑️"
+      />
     </div>
   );
 };

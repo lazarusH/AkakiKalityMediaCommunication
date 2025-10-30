@@ -204,7 +204,7 @@ The production build will be in the `dist` folder.
 1. Go to `/login`
 2. Sign in with admin credentials
 3. Access admin dashboard at `/admin`
-4. Create/manage articles, gallery images, and files
+4. Create/Manage News, gallery images, and files
 
 ### Public Site
 - Browse news by category

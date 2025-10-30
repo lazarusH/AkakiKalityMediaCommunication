@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 import { supabase, STORAGE_BUCKETS, getPublicUrl } from '../../lib/supabase';
+import { optimizeImages, getOptimizationSettings } from '../../utils/imageOptimizer';
+import { useToast } from '../../contexts/ToastContext';
+import ConfirmModal from '../../components/ConfirmModal';
 import './GalleryManager.css';
 
 const GalleryManager = () => {
+  const { toast } = useToast();
   const [images, setImages] = useState([]);
   const [flickrAlbums, setFlickrAlbums] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,6 +16,8 @@ const GalleryManager = () => {
   const [caption, setCaption] = useState('');
   const [imageFiles, setImageFiles] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [confirmDelete, setConfirmDelete] = useState(null);
+  const [confirmDeleteAlbum, setConfirmDeleteAlbum] = useState(null);
   
   // Flickr album states
   const [flickrTitle, setFlickrTitle] = useState('');
@@ -78,7 +84,7 @@ const GalleryManager = () => {
   const handleUpload = async (e) => {
     e.preventDefault();
     if (imageFiles.length === 0 || !caption) {
-      alert('Please select at least one image and enter a caption');
+      toast.warning('Please select at least one image and enter a caption');
       return;
     }
 
@@ -87,18 +93,31 @@ const GalleryManager = () => {
     let failCount = 0;
 
     try {
-      // Upload all images
-      for (let i = 0; i < imageFiles.length; i++) {
+      console.log(`Optimizing ${imageFiles.length} gallery images...`);
+      
+      // Optimize all images before uploading (reduces size while maintaining quality)
+      const optimizedFiles = await optimizeImages(
+        imageFiles, 
+        getOptimizationSettings('gallery'),
+        (current, total) => {
+          console.log(`Optimized ${current}/${total} images`);
+        }
+      );
+      
+      console.log('All images optimized, uploading...');
+      
+      // Upload all optimized images
+      for (let i = 0; i < optimizedFiles.length; i++) {
         try {
-          const imageFile = imageFiles[i];
-          const fileExt = imageFile.name.split('.').pop();
-          const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+          const optimizedFile = optimizedFiles[i];
+          // Use .webp extension for optimized images
+          const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
           const filePath = `${fileName}`;
 
           // Upload to storage
           const { error: uploadError } = await supabase.storage
             .from(STORAGE_BUCKETS.GALLERY_IMAGES)
-            .upload(filePath, imageFile);
+            .upload(filePath, optimizedFile);
 
           if (uploadError) throw uploadError;
 
@@ -131,41 +150,41 @@ const GalleryManager = () => {
       
       // Show result message
       if (successCount > 0 && failCount === 0) {
-        alert(`✅ Successfully uploaded ${successCount} image${successCount > 1 ? 's' : ''}!`);
+        toast.success(`Successfully uploaded ${successCount} image${successCount > 1 ? 's' : ''}!`);
       } else if (successCount > 0 && failCount > 0) {
-        alert(`⚠️ Uploaded ${successCount} image${successCount > 1 ? 's' : ''}, but ${failCount} failed.`);
+        toast.warning(`Uploaded ${successCount} image${successCount > 1 ? 's' : ''}, but ${failCount} failed.`);
       } else {
-        alert('❌ Failed to upload images. Please try again.');
+        toast.error('Failed to upload images. Please try again.');
       }
       
       // Refresh the gallery list
       await fetchImages();
     } catch (error) {
       console.error('Error uploading images:', error);
-      alert('❌ Failed to upload images: ' + (error.message || 'Please try again.'));
+      toast.error('Failed to upload images: ' + (error.message || 'Please try again.'));
     } finally {
       setUploading(false);
     }
   };
 
-  const handleDelete = async (id, imageUrl, caption) => {
-    if (!window.confirm(`"${caption}" የሚለውን ምስል መሰረዝ ይፈልጋሉ? / Are you sure you want to delete "${caption}"?`)) {
-      return;
-    }
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
 
     try {
       const { error } = await supabase
         .from('media_gallery')
         .delete()
-        .eq('id', id);
+        .eq('id', confirmDelete.id);
 
       if (error) throw error;
 
-      setImages(images.filter(img => img.id !== id));
-      alert('✅ ምስሉ በተሳካ ሁኔታ ተሰርዟል! / Image deleted successfully!');
+      setImages(images.filter(img => img.id !== confirmDelete.id));
+      toast.success('ምስሉ በተሳካ ሁኔታ ተሰርዟል! / Image deleted successfully!');
     } catch (error) {
       console.error('Error deleting image:', error);
-      alert('❌ ምስሉን መሰረዝ አልተሳካም። እባክዎ እንደገና ይሞክሩ። / Failed to delete image. Please try again.');
+      toast.error('ምስሉን መሰረዝ አልተሳካም። እባክዎ እንደገና ይሞክሩ። / Failed to delete image. Please try again.');
+    } finally {
+      setConfirmDelete(null);
     }
   };
 
@@ -173,7 +192,7 @@ const GalleryManager = () => {
   const handleFlickrSubmit = async (e) => {
     e.preventDefault();
     if (!flickrTitle || !flickrUrl) {
-      alert('Please fill in at least the title and Flickr URL');
+      toast.warning('Please fill in at least the title and Flickr URL');
       return;
     }
 
@@ -184,14 +203,15 @@ const GalleryManager = () => {
     const guestPassMatch = flickrUrl.match(/\/gp\/[^\/]+\/[^\/\?]+/);
     
     if (!albumIdMatch && !albumWithMatch && !setIdMatch && !guestPassMatch) {
-      alert('❌ Invalid Flickr URL!\n\nThe URL should link to a specific album.\n\nExample of correct URLs:\n• https://www.flickr.com/photos/username/albums/72157720123456789\n• https://www.flickr.com/photos/username/albums/with/72157720123456789\n• https://www.flickr.com/gp/username/shortcode (guest pass)\n\nTo get the correct URL:\n1. Go to your Flickr albums page\n2. Click on a specific album\n3. Copy the URL from your browser address bar');
+      toast.error('Invalid Flickr URL. Please link to a specific album.');
       return;
     }
     
     // Warn about guest pass URLs
     if (guestPassMatch) {
-      const confirmed = window.confirm('⚠️ You\'re using a Guest Pass URL (for private albums).\n\nThis may not work properly. For best results:\n1. Make the album PUBLIC on Flickr\n2. Use the regular album URL instead\n\nDo you want to try anyway?');
-      if (!confirmed) {
+      // Non-blocking warning
+      toast.info('Guest Pass URL detected. Public album URL is recommended.');
+      if (false) {
         return;
       }
     }
@@ -216,7 +236,7 @@ const GalleryManager = () => {
           .eq('id', editingFlickrId);
 
         if (error) throw error;
-        alert('✅ Album updated successfully!');
+        toast.success('Album updated successfully!');
       } else {
         // Insert new album
         const { error } = await supabase
@@ -224,7 +244,7 @@ const GalleryManager = () => {
           .insert([albumData]);
 
         if (error) throw error;
-        alert('✅ Album added successfully!');
+        toast.success('Album added successfully!');
       }
 
       // Reset form and close it
@@ -233,7 +253,7 @@ const GalleryManager = () => {
       await fetchFlickrAlbums();
     } catch (error) {
       console.error('Error saving album:', error);
-      alert('❌ Failed to save album: ' + (error.message || 'Please try again.'));
+      toast.error('Failed to save album: ' + (error.message || 'Please try again.'));
     } finally {
       setUploading(false);
     }
@@ -251,24 +271,24 @@ const GalleryManager = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleDeleteFlickr = async (id, title) => {
-    if (!window.confirm(`"${title}" የሚለውን አልበም መሰረዝ ይፈልጋሉ? / Are you sure you want to delete "${title}"?`)) {
-      return;
-    }
+  const handleDeleteFlickr = async () => {
+    if (!confirmDeleteAlbum) return;
 
     try {
       const { error } = await supabase
         .from('flickr_albums')
         .delete()
-        .eq('id', id);
+        .eq('id', confirmDeleteAlbum.id);
 
       if (error) throw error;
 
-      setFlickrAlbums(flickrAlbums.filter(album => album.id !== id));
-      alert('✅ አልበሙ በተሳካ ሁኔታ ተሰርዟል! / Album deleted successfully!');
+      setFlickrAlbums(flickrAlbums.filter(album => album.id !== confirmDeleteAlbum.id));
+      toast.success('አልበሙ በተሳካ ሁኔታ ተሰርዟል! / Album deleted successfully!');
     } catch (error) {
       console.error('Error deleting album:', error);
-      alert('❌ አልበሙን መሰረዝ አልተሳካም። እባክዎ እንደገና ይሞክሩ። / Failed to delete album. Please try again.');
+      toast.error('አልበሙን መሰረዝ አልተሳካም። እባክዎ እንደገና ይሞክሩ። / Failed to delete album. Please try again.');
+    } finally {
+      setConfirmDeleteAlbum(null);
     }
   };
 
@@ -501,7 +521,7 @@ const GalleryManager = () => {
                     </td>
                     <td className="actions-cell">
                       <button
-                        onClick={() => handleDelete(image.id, image.image_url, image.caption)}
+                        onClick={() => setConfirmDelete({ id: image.id, caption: image.caption })}
                         className="btn-delete"
                         title="ሰርዝ / Delete"
                       >
@@ -569,7 +589,7 @@ const GalleryManager = () => {
                           ✏️ አርትዕ
                         </button>
                         <button
-                          onClick={() => handleDeleteFlickr(album.id, album.title)}
+                          onClick={() => setConfirmDeleteAlbum({ id: album.id, title: album.title })}
                           className="btn-delete"
                           title="ሰርዝ / Delete"
                         >
@@ -584,6 +604,27 @@ const GalleryManager = () => {
           </div>
         )}
       </div>
+      <ConfirmModal
+        isOpen={!!confirmDelete}
+        onClose={() => setConfirmDelete(null)}
+        onConfirm={handleDelete}
+        title="ምስልን ይሰርዙ? / Delete Image?"
+        message={`Are you sure you want to delete "${confirmDelete?.caption}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        icon="🗑️"
+      />
+
+      <ConfirmModal
+        isOpen={!!confirmDeleteAlbum}
+        onClose={() => setConfirmDeleteAlbum(null)}
+        onConfirm={handleDeleteFlickr}
+        title="አልበምን ይሰርዙ? / Delete Album?"
+        message={`Are you sure you want to delete "${confirmDeleteAlbum?.title}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        icon="🗑️"
+      />
     </div>
   );
 };

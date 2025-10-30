@@ -81,25 +81,51 @@ export const fetchFlickrAlbumPhotos = async (flickrUrl) => {
     const feedUrl = `https://www.flickr.com/services/feeds/photoset.gne?set=${albumId}&nsid=${userId}&format=json&nojsoncallback=1`;
     
     // Use CORS proxy to bypass browser restrictions
-    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(feedUrl)}`;
+    // Try multiple proxies with fallback
+    const proxies = [
+      `https://corsproxy.io/?${encodeURIComponent(feedUrl)}`,
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(feedUrl)}`,
+    ];
     
-    const response = await fetch(proxyUrl);
-    const data = await response.json();
+    let lastError = null;
     
-    if (data.items) {
-      return data.items.map((item, index) => ({
-        id: item.link || index,
-        title: item.title,
-        thumbnail: item.media.m, // Medium size
-        large: item.media.m.replace('_m.jpg', '_b.jpg'), // Large size
-        original: item.media.m.replace('_m.jpg', '.jpg'), // Original
-        description: item.description,
-        link: item.link,
-        published: item.published,
-      }));
+    for (const proxyUrl of proxies) {
+      try {
+        const response = await fetch(proxyUrl, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // If we got valid data, return it
+        if (data && data.items) {
+          return data.items.map((item, index) => ({
+            id: item.link || index,
+            title: item.title,
+            thumbnail: item.media.m, // Medium size
+            large: item.media.m.replace('_m.jpg', '_b.jpg'), // Large size
+            original: item.media.m.replace('_m.jpg', '.jpg'), // Original
+            description: item.description,
+            link: item.link,
+            published: item.published,
+          }));
+        }
+      } catch (error) {
+        console.warn(`Proxy ${proxyUrl} failed:`, error.message);
+        lastError = error;
+        // Continue to next proxy
+      }
     }
     
-    return [];
+    // If all proxies failed, throw the last error
+    throw lastError || new Error('All CORS proxies failed');
   } catch (error) {
     console.error('Error fetching Flickr album photos:', error);
     // Return empty array instead of throwing to fail gracefully

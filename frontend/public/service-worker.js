@@ -1,4 +1,4 @@
-const CACHE_NAME = 'akaki-kality-v2';
+const CACHE_NAME = 'akaki-kality-v3';
 const urlsToCache = [
   '/',
   '/ዜና.png',
@@ -36,6 +36,24 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
+  const requestUrl = new URL(event.request.url);
+  
+  // Skip caching for external APIs (CORS proxies, Flickr, Supabase, etc.)
+  const isExternalAPI = 
+    requestUrl.hostname.includes('corsproxy.io') ||
+    requestUrl.hostname.includes('allorigins.win') ||
+    requestUrl.hostname.includes('flickr.com') ||
+    requestUrl.hostname.includes('supabase.co') ||
+    requestUrl.hostname.includes('youtube.com') ||
+    requestUrl.hostname.includes('googleapis.com');
+  
+  // For external APIs, just fetch directly without caching
+  if (isExternalAPI) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+  
+  // For local resources, use cache-first strategy
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
@@ -61,6 +79,9 @@ self.addEventListener('fetch', (event) => {
               cache.put(event.request, responseToCache);
             });
           
+          return response;
+        }).catch((error) => {
+          console.log('Fetch failed; returning offline page instead.', error);
           return response;
         });
       })

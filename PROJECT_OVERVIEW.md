@@ -373,7 +373,7 @@ All pages are fully responsive and tested on:
 ### Planned Features
 
 1. **Phase 2**
-   - Email notifications for new articles
+   - Email notifications for Add Newss
    - Social media sharing
    - Print-friendly views
    - Advanced search

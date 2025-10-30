@@ -1,7 +1,65 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 import LatestNewsSlider from '../components/LatestNewsSlider';
 import './About.css';
 
 const About = () => {
+  const [sections, setSections] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchSections();
+  }, []);
+
+  const fetchSections = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('about_page')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order');
+
+      if (error) throw error;
+      
+      // Convert array to object keyed by section_key for easy access
+      const sectionsObj = {};
+      (data || []).forEach(section => {
+        sectionsObj[section.section_key] = section;
+      });
+      
+      setSections(sectionsObj);
+    } catch (error) {
+      console.error('Error fetching sections:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="about-page">
+        <div className="loading-container">
+          <p>እየተጫነ ነው...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Sub-City sections
+  const overview = sections.overview || {};
+  const vision = sections.vision || {};
+  const mission = sections.mission || {};
+  const values = sections.values || {};
+  const statistics = sections.statistics || {};
+  const map = sections.map || {};
+
+  // Media Communication Office sections
+  const mediaOverview = sections.media_overview || {};
+  const mediaVision = sections.media_vision || {};
+  const mediaMission = sections.media_mission || {};
+  const mediaValues = sections.media_values || {};
+  const mediaStatistics = sections.media_statistics || {};
+
   return (
     <div className="about-page">
       <div className="about-header">
@@ -12,131 +70,172 @@ const About = () => {
       <div className="about-container">
         {/* Overview Section */}
         <section className="about-section">
-          <h2>ስለ አቃቂ ቃሊቲ ክፍለ ከተማ</h2>
+          <h2>{overview.title_am}</h2>
           <div className="section-content">
-            <p className="amharic-text">
-              አቃቂ ቃሊቲ ክፍለ ከተማ  በኢትዮጲያ ዋና ከተማ በሆነችው አዲስ አበባ ከተማ ከሚገኙት አስራ አንድ ክፍለ ከተሞች አንዱ ነው። በከተማው ደቡባዊ ክፍል ከከተማው መሃል 20 ኪ.ሜ ርቀት ላይ የሚገኝ ሲሆን ብዙ ኢንደስትሪዎች ስለሚገኙ የኢንዱስትሪ ዞን ነው።
-            </p>
-            <p className="amharic-text">
-              በክፍለ ከተማ አስተዳደሩ 12 ወረዳዎች ያሉ ሲሆን በ2015 በጀት ዓመት መልሶ ማደራጀት በተሰራዉ መሠረት በስሩ 504 ብሎክ ፤በእማዉራ 18566 በአባዉራ 29272 በድምሩ 56379፤ በህዝብ ቁጥር 192859 ይገመታል።
-            </p>
-            <p className="amharic-text">
-              በደርግ ጊዜ የሰሜኑ ክፍል ቃሊቲ/ወረዳ 27/ ከፍትኛ 27 እና ደቡባዊው ክፍል አቃቂ/ወረዳ 26/ ከፍትኛ 26 ተብሎ ይጠራ ነበር።የክፍለ ከተማው ከፍታ ከ2050 እስከ 2331 ሜትር ከባህር ጠለል በላይ ሲሆን 281 ሜትር ርቀት አለው።
-            </p>
-            <p className="amharic-text">
-              ክፍለ ከተማው ስያሜውን ያገኘው አቃቂ እና ቃሊቲ የሚሉትን ስያሜዎች በማዋሃድ ነው።በአዲስ አበባ ደቡባዊ ክፍል ከምስራቅ እና ከደቡብ በኦሮሚያ ክልል ገላን ከተማ፣ ከምዕራብ በንፋስ ስልክ ላፍቶ፣ ከሰሜን በንፋስ ስልክ ላፍቶ እና በቦሌ ክፍለ ከተሞች የተከበበ ነው።
-            </p>
+            {overview.content_am && overview.content_am.split('\n\n').map((paragraph, idx) => (
+              <p key={idx} className="amharic-text">
+                {paragraph}
+              </p>
+            ))}
           </div>
         </section>
 
         {/* Map Section */}
-        <section className="about-section map-section">
-          <h2>የአቃቂ ቃሊቲ ካርታ / Akaki Kality Map</h2>
-          <div className="map-container">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63063.98087276829!2d38.73864687910156!3d8.88767!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x164b8465b7e5f53d%3A0x3e7f0e3c3c3c3c3c!2sAkaki%20Kality%2C%20Addis%20Ababa!5e0!3m2!1sen!2set!4v1234567890123!5m2!1sen!2set"
-              width="100%"
-              height="450"
-              style={{ border: 0, borderRadius: '12px' }}
-              allowFullScreen=""
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Akaki Kality Map"
-            ></iframe>
-          </div>
-        </section>
+        {map.metadata?.map_url && (
+          <section className="about-section map-section">
+            <h2>{map.title_am} / {map.title_en}</h2>
+            <div className="map-container">
+              <iframe
+                src={map.metadata.map_url}
+                width="100%"
+                height="450"
+                style={{ border: 0, borderRadius: '12px' }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Akaki Kality Map"
+              ></iframe>
+            </div>
+          </section>
+        )}
 
         {/* Vision Section */}
         <section className="about-section vision-section">
-          <div className="section-icon">🎯</div>
-          <h2>ራዕይ / Vision</h2>
+          {vision.metadata?.icon && <div className="section-icon">{vision.metadata.icon}</div>}
+          <h2>{vision.title_am} / {vision.title_en}</h2>
           <div className="section-content">
             <p className="highlight-text">
-              አዲስ አበባ ከተማ በ 2017 ዓ.ም በአፍሪካ ከሚገኙ ምርጥ 5 ከተሞች መካከል አንዷ ሆና ማየት!
+              {vision.content_am}
             </p>
-            <p className="english-text">
-              To see Addis Ababa become one of the top 5 cities in Africa by 2025!
-            </p>
+            {vision.content_en && (
+              <p className="english-text">
+                {vision.content_en}
+              </p>
+            )}
           </div>
         </section>
 
         {/* Mission Section */}
         <section className="about-section mission-section">
-          <div className="section-icon">🚀</div>
-          <h2>ተልዕኮ / Mission</h2>
+          {mission.metadata?.icon && <div className="section-icon">{mission.metadata.icon}</div>}
+          <h2>{mission.title_am} / {mission.title_en}</h2>
           <div className="section-content">
             <p className="highlight-text">
-              አዲስ አበባ ከተማ መልካም አስተዳደር የሰፈነባት የላቀ ልማት የሚረጋገጥባትና ጠንካራ የሀገር ውስጥ እና አለም አቀፍ ግንኙነት የሚጠናከርባት እና ለኗሪዎቿ ምቹ  ከተማ ማድረግ!
+              {mission.content_am}
             </p>
-            <p className="english-text">
-              To make Addis Ababa a city with good governance, advanced development, strong domestic and international relations, and comfortable for its residents!
-            </p>
+            {mission.content_en && (
+              <p className="english-text">
+                {mission.content_en}
+              </p>
+            )}
           </div>
         </section>
 
-        {/* Values Section */}
+        {/* Values Section - No icons, just text list */}
         <section className="about-section values-section">
-          <div className="section-icon">⭐</div>
-          <h2>እሴቶች / Values</h2>
+          {values.metadata?.icon && <div className="section-icon">{values.metadata.icon}</div>}
+          <h2>{values.title_am} / {values.title_en}</h2>
           <div className="values-grid">
-            <div className="value-card">
-              <div className="value-icon">✓</div>
-              <h3>ተጠያቂነት</h3>
-              <p>Accountability</p>
-            </div>
-            <div className="value-card">
-              <div className="value-icon">👁️</div>
-              <h3>ግልፅነት</h3>
-              <p>Transparency</p>
-            </div>
-            <div className="value-card">
-              <div className="value-icon">🌟</div>
-              <h3>የላቀ አገልግሎት መስጠት</h3>
-              <p>Excellence in Service</p>
-            </div>
-            <div className="value-card">
-              <div className="value-icon">📚</div>
-              <h3>በዕውቀትና በዕምነት መምራትና መስራት</h3>
-              <p>Leading and Working with Knowledge and Faith</p>
-            </div>
-            <div className="value-card">
-              <div className="value-icon">👥</div>
-              <h3>የህዝብ ጥቅምን ማስቀደም</h3>
-              <p>Prioritizing Public Interest</p>
-            </div>
-            <div className="value-card">
-              <div className="value-icon">🤝</div>
-              <h3>የህዝብ ለህዝብ ትስስርን ማጠናከር</h3>
-              <p>Strengthening People-to-People Relations</p>
-            </div>
-            <div className="value-card">
-              <div className="value-icon">🔄</div>
-              <h3>ለለውጥ ዝግጁነት</h3>
-              <p>Readiness for Change</p>
-            </div>
+            {(values.metadata?.items || []).map((item, idx) => (
+              <div key={idx} className="value-card">
+                <h3>{item.am}</h3>
+                <p>{item.en}</p>
+              </div>
+            ))}
           </div>
         </section>
 
         {/* Statistics Section */}
         <section className="about-section stats-section">
-          <h2>በቁጥር / By the Numbers</h2>
+          <h2>{statistics.title_am} / {statistics.title_en}</h2>
           <div className="stats-grid">
-            <div className="stat-card">
-              <div className="stat-number">12</div>
-              <div className="stat-label">ወረዳዎች / Woredas</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-number">504</div>
-              <div className="stat-label">ብሎክ / Blocks</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-number">192,859</div>
-              <div className="stat-label">የህዝብ ቁጥር / Population</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-number">20 ኪ.ሜ</div>
-              <div className="stat-label">ከከተማው መሃል / From City Center</div>
-            </div>
+            {(statistics.metadata?.stats || []).map((stat, idx) => (
+              <div key={idx} className="stat-card">
+                <div className="stat-number">{stat.number}</div>
+                <div className="stat-label">{stat.label_am} / {stat.label_en}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* MEDIA COMMUNICATION OFFICE SECTIONS */}
+        <div className="section-divider">
+          <div className="divider-line"></div>
+          <div className="divider-content">
+            <h2>የመገናኛ ብዙሀን ጽ/ቤት</h2>
+            <p>Media Communication Office</p>
+          </div>
+          <div className="divider-line"></div>
+        </div>
+
+        {/* Media Overview Section */}
+        <section className="about-section">
+          <h2>{mediaOverview.title_am}</h2>
+          <div className="section-content">
+            {mediaOverview.content_am && mediaOverview.content_am.split('\n\n').map((paragraph, idx) => (
+              <p key={idx} className="amharic-text">
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </section>
+
+        {/* Media Vision Section */}
+        <section className="about-section vision-section">
+          {mediaVision.metadata?.icon && <div className="section-icon">{mediaVision.metadata.icon}</div>}
+          <h2>{mediaVision.title_am} / {mediaVision.title_en}</h2>
+          <div className="section-content">
+            <p className="highlight-text">
+              {mediaVision.content_am}
+            </p>
+            {mediaVision.content_en && (
+              <p className="english-text">
+                {mediaVision.content_en}
+              </p>
+            )}
+          </div>
+        </section>
+
+        {/* Media Mission Section */}
+        <section className="about-section mission-section">
+          {mediaMission.metadata?.icon && <div className="section-icon">{mediaMission.metadata.icon}</div>}
+          <h2>{mediaMission.title_am} / {mediaMission.title_en}</h2>
+          <div className="section-content">
+            <p className="highlight-text">
+              {mediaMission.content_am}
+            </p>
+            {mediaMission.content_en && (
+              <p className="english-text">
+                {mediaMission.content_en}
+              </p>
+            )}
+          </div>
+        </section>
+
+        {/* Media Values Section */}
+        <section className="about-section values-section">
+          {mediaValues.metadata?.icon && <div className="section-icon">{mediaValues.metadata.icon}</div>}
+          <h2>{mediaValues.title_am} / {mediaValues.title_en}</h2>
+          <div className="values-grid">
+            {(mediaValues.metadata?.items || []).map((item, idx) => (
+              <div key={idx} className="value-card">
+                <h3>{item.am}</h3>
+                <p>{item.en}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Media Statistics Section */}
+        <section className="about-section stats-section">
+          <h2>{mediaStatistics.title_am} / {mediaStatistics.title_en}</h2>
+          <div className="stats-grid">
+            {(mediaStatistics.metadata?.stats || []).map((stat, idx) => (
+              <div key={idx} className="stat-card">
+                <div className="stat-number">{stat.number}</div>
+                <div className="stat-label">{stat.label_am} / {stat.label_en}</div>
+              </div>
+            ))}
           </div>
         </section>
       </div>
@@ -147,5 +246,7 @@ const About = () => {
 };
 
 export default About;
+
+
 
 

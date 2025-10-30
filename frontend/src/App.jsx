@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
 import Navbar from './components/Layout/Navbar';
 import Footer from './components/Layout/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -11,6 +12,7 @@ import NewsList from './pages/NewsList';
 import ArticleDetail from './pages/ArticleDetail';
 import Gallery from './pages/Gallery';
 import Files from './pages/Files';
+import Institutions from './pages/Institutions';
 import About from './pages/About';
 import Login from './pages/Login';
 
@@ -23,6 +25,7 @@ import GalleryManager from './pages/admin/GalleryManager';
 import FileManager from './pages/admin/FileManager';
 import InstitutionManager from './pages/admin/InstitutionManager';
 import SocialMediaManager from './pages/admin/SocialMediaManager';
+import AboutManager from './pages/admin/AboutManager';
 
 // Institution Pages - Dynamic Route
 import DynamicInstitution from './pages/institutions/DynamicInstitution';
@@ -32,10 +35,11 @@ import './App.css';
 function App() {
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        <Router>
-          <div className="App">
-            <Navbar />
+      <ToastProvider>
+        <AuthProvider>
+          <Router>
+            <div className="App">
+              <Navbar />
             <main className="main-content">
               <Routes>
               {/* Public Routes */}
@@ -44,6 +48,7 @@ function App() {
               <Route path="/article/:id" element={<ArticleDetail />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/files" element={<Files />} />
+              <Route path="/institutions" element={<Institutions />} />
               <Route path="/about" element={<About />} />
               <Route path="/login" element={<Login />} />
 
@@ -69,6 +74,7 @@ function App() {
                 <Route path="files/upload" element={<FileManager />} />
                 <Route path="institutions" element={<InstitutionManager />} />
                 <Route path="social-media" element={<SocialMediaManager />} />
+                <Route path="about" element={<AboutManager />} />
               </Route>
             </Routes>
           </main>
@@ -76,6 +82,7 @@ function App() {
         </div>
       </Router>
     </AuthProvider>
+      </ToastProvider>
     </ErrorBoundary>
   );
 }

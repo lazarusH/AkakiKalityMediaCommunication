@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { getYouTubeThumbnail } from '../lib/youtube';
+import { getYouTubeThumbnail, getYouTubeVideoId } from '../lib/youtube';
 import LatestNewsSlider from '../components/LatestNewsSlider';
 import './NewsList.css';
 
@@ -67,7 +67,7 @@ const NewsList = () => {
     { value: 'all', label: 'ሁሉም' },
     { value: 'የሃገር', label: 'የሃገር' },
     { value: 'የከተማ', label: 'የከተማ' },
-    { value: 'የክፍለ፟-ከተማ', label: 'የክፍለ፟-ከተማ' },
+    { value: 'የክፍለ-ከተማ', label: 'የክፍለ-ከተማ' },
     { value: 'የወረዳ', label: 'የወረዳ' },
     { value: 'ያልተመደበ', label: 'ያልተመደበ' },
   ];
@@ -123,12 +123,27 @@ const NewsList = () => {
             {filteredArticles.map((article) => {
               // Get thumbnail: use image_url if available, otherwise YouTube thumbnail
               const thumbnail = article.image_url || (article.video_url ? getYouTubeThumbnail(article.video_url) : null);
+              const videoId = article.video_url ? getYouTubeVideoId(article.video_url) : null;
               
               return (
                 <Link to={`/article/${article.id}`} key={article.id} className="article-card">
                   {thumbnail && (
                     <div className="article-image-wrapper">
-                      <img src={thumbnail} alt={article.title} className="article-image" />
+                      <img 
+                        src={thumbnail} 
+                        alt={article.title} 
+                        className="article-image"
+                        onError={(e) => {
+                          // Fallback to default YouTube thumbnail if high quality fails
+                          if (videoId && e.target.src.includes('hqdefault')) {
+                            e.target.src = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+                          } else if (videoId && e.target.src.includes('mqdefault')) {
+                            e.target.src = `https://img.youtube.com/vi/${videoId}/default.jpg`;
+                          } else {
+                            e.target.style.display = 'none';
+                          }
+                        }}
+                      />
                       <span className="article-category">{article.category}</span>
                       {article.video_url && !article.image_url && (
                         <div className="video-badge">▶ Video</div>

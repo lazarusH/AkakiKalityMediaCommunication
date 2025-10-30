@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { getYouTubeThumbnail } from '../lib/youtube';
+import { getYouTubeThumbnail, getYouTubeVideoId } from '../lib/youtube';
 import NewsSlider from '../components/NewsSlider';
 import LatestNewsSlider from '../components/LatestNewsSlider';
 import logo from '../assets/logo.png';
@@ -16,6 +16,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const heroCategories = ['all', 'የሃገር', 'የከተማ', 'የክፍለ፟-ከተማ', 'የወረዳ', 'ያልተመደበ'];
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -116,7 +117,7 @@ const Home = () => {
               <img src={logo} alt="Akaki Kality Logo" className="hero-logo" />
               <div className="hero-office-title">
                 <h1 className="office-name-am">አቃቂ ቃሊቲ ክ/ከተማ አስተዳደር</h1>
-                <h2 className="office-name-en">Aakaki Kality Sub-City Administration</h2>
+                <h2 className="office-name-en">Akaki Kality Sub-City Administration</h2>
                 <h3 className="office-dept-am">ኮሙኒኬሽን ጽ/ቤት</h3>
                 <h4 className="office-dept-en">Communication Office</h4>
               </div>
@@ -153,19 +154,13 @@ const Home = () => {
 
             {/* Category Filter Pills */}
             <div className="category-pills">
-              <button 
-                className={`category-pill ${selectedCategory === 'all' ? 'active' : ''}`}
-                onClick={() => handleCategoryFilter('all')}
-              >
-                ሁሉም / All
-              </button>
-              {allCategories.slice(0, 5).map((category) => (
+              {heroCategories.map((cat) => (
                 <button
-                  key={category}
-                  className={`category-pill ${selectedCategory === category ? 'active' : ''}`}
-                  onClick={() => handleCategoryFilter(category)}
+                  key={cat}
+                  className={`category-pill ${selectedCategory === cat ? 'active' : ''}`}
+                  onClick={() => handleCategoryFilter(cat)}
                 >
-                  {category}
+                  {cat === 'all' ? 'ሁሉም / All' : cat}
                 </button>
               ))}
             </div>
@@ -218,12 +213,27 @@ const Home = () => {
                     {filteredNews.map((article) => {
                       const thumbnail = article.image_url || 
                         (article.video_url ? getYouTubeThumbnail(article.video_url) : null);
+                      const videoId = article.video_url ? getYouTubeVideoId(article.video_url) : null;
                       
                       return (
                         <Link to={`/article/${article.id}`} key={article.id} className="news-card">
                           {thumbnail && (
                             <div className="news-image-wrapper">
-                              <img src={thumbnail} alt={article.title} className="news-image" />
+                              <img 
+                                src={thumbnail} 
+                                alt={article.title} 
+                                className="news-image"
+                                onError={(e) => {
+                                  // Fallback to lower quality YouTube thumbnail if high quality fails
+                                  if (videoId && e.target.src.includes('hqdefault')) {
+                                    e.target.src = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+                                  } else if (videoId && e.target.src.includes('mqdefault')) {
+                                    e.target.src = `https://img.youtube.com/vi/${videoId}/default.jpg`;
+                                  } else {
+                                    e.target.style.display = 'none';
+                                  }
+                                }}
+                              />
                               {article.video_url && !article.image_url && (
                                 <div className="video-badge">▶ ቪዲዮ</div>
                               )}

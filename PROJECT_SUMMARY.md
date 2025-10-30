@@ -238,7 +238,7 @@ A complete, production-ready news platform with:
 ## 🔄 Future Enhancements (Optional)
 
 ### Phase 2 Ideas
-- Email notifications for new articles
+- Email notifications for Add Newss
 - Social media share buttons
 - Print-friendly article views
 - Advanced search functionality

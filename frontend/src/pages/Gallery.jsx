@@ -50,19 +50,23 @@ const Gallery = () => {
 
       if (error) throw error;
       
-      // Fetch first photo from each album to use as cover if no thumbnail
+      // Fetch first photo from each album to use as cover
       const albumsWithCovers = await Promise.all(
         (data || []).map(async (album) => {
-          if (!album.thumbnail_url) {
-            try {
-              const photos = await fetchFlickrAlbumPhotos(album.flickr_url);
-              if (photos && photos.length > 0) {
-                return { ...album, thumbnail_url: photos[0].thumbnail };
-              }
-            } catch (err) {
-              console.error(`Error fetching cover for ${album.title}:`, err);
+          try {
+            // Always fetch the first photo as thumbnail for consistency
+            const photos = await fetchFlickrAlbumPhotos(album.flickr_url);
+            if (photos && photos.length > 0) {
+              return { 
+                ...album, 
+                thumbnail_url: photos[0].thumbnail,
+                photo_count: photos.length // Update photo count
+              };
             }
+          } catch (err) {
+            console.error(`Error fetching cover for ${album.title}:`, err);
           }
+          // Return album with existing data if fetch fails
           return album;
         })
       );
@@ -186,19 +190,30 @@ const Gallery = () => {
                           onClick={() => openAlbum(album)}
                         >
                           {album.thumbnail_url ? (
-                            <img src={album.thumbnail_url} alt={album.title} loading="lazy" />
-                          ) : (
-                            <div className="album-placeholder">
-                              <span className="album-icon">📁</span>
-                            </div>
-                          )}
+                            <img 
+                              src={album.thumbnail_url} 
+                              alt={album.title} 
+                              loading="lazy"
+                              onError={(e) => {
+                                // If thumbnail fails to load, show placeholder
+                                e.target.style.display = 'none';
+                                e.target.nextElementSibling.style.display = 'flex';
+                              }}
+                            />
+                          ) : null}
+                          <div 
+                            className="album-placeholder"
+                            style={{ display: album.thumbnail_url ? 'none' : 'flex' }}
+                          >
+                            <span className="album-icon">📁</span>
+                          </div>
                           <div className="album-info">
                             <h3 className="album-title">{album.title}</h3>
                             {album.description && (
                               <p className="album-description">{album.description}</p>
                             )}
                             {album.photo_count > 0 && (
-                              <span className="photo-count">{album.photo_count} photos</span>
+                              <span className="photo-count">{album.photo_count} ፎቶዎች / photos</span>
                             )}
                           </div>
                         </div>

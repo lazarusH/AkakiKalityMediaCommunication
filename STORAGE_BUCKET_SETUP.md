@@ -152,3 +152,8 @@ Your app uses these exact names:
 3. Make sure buckets have INSERT policy for authenticated users
 
 
+
+
+
+
+

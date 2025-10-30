@@ -41,14 +41,9 @@ const NewsSlider = ({ articles }) => {
 
   return (
     <div className="news-slider">
-      <div className="slider-container">
+      <div className="slider-container" style={thumbnail ? { backgroundImage: `url(${thumbnail})` } : {}}>
         <Link to={`/article/${article.id}`} className="slider-content">
-          {thumbnail && (
-            <div className="slider-image-wrapper">
-              <img src={thumbnail} alt={article.title} className="slider-image" />
-              <div className="slider-overlay"></div>
-            </div>
-          )}
+          <div className="slider-overlay"></div>
           <div className="slider-text">
             <span className="slider-category">{article.category}</span>
             <h2 className="slider-title">{article.title}</h2>
@@ -88,5 +83,7 @@ const NewsSlider = ({ articles }) => {
 };
 
 export default NewsSlider;
+
+
 
 

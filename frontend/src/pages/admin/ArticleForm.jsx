@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase, STORAGE_BUCKETS, getPublicUrl } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
+import { optimizeImage, getOptimizationSettings } from '../../utils/imageOptimizer';
 import './ArticleForm.css';
 
 const ArticleForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { toast } = useToast();
   const isEdit = Boolean(id);
 
   const [formData, setFormData] = useState({
@@ -113,15 +116,20 @@ const ArticleForm = () => {
   };
 
   const uploadImage = async (file, type) => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${type}-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-    const filePath = `${fileName}`;
-
     try {
-      console.log('Uploading to bucket:', STORAGE_BUCKETS.NEWS_IMAGES);
+      console.log(`Optimizing ${type} image...`);
+      
+      // Optimize the image before uploading (reduces size while maintaining quality)
+      const optimizedFile = await optimizeImage(file, getOptimizationSettings('news'));
+      
+      // Use .webp extension for optimized images
+      const fileName = `${type}-${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
+      const filePath = `${fileName}`;
+
+      console.log('Uploading optimized image to bucket:', STORAGE_BUCKETS.NEWS_IMAGES);
       const { data, error: uploadError } = await supabase.storage
         .from(STORAGE_BUCKETS.NEWS_IMAGES)
-        .upload(filePath, file, {
+        .upload(filePath, optimizedFile, {
           cacheControl: '3600',
           upsert: false
         });
@@ -188,6 +196,7 @@ const ArticleForm = () => {
           console.error('Update error:', updateError);
           throw new Error(`Failed to update article: ${updateError.message}`);
         }
+        toast.success('News updated successfully!');
       } else {
         const { data, error: insertError } = await supabase
           .from('articles')
@@ -201,6 +210,7 @@ const ArticleForm = () => {
         
         console.log('Article created:', data);
         articleId = data[0].id;
+        toast.success('News published successfully!');
       }
 
       // Upload additional images (excluding the main image)
@@ -266,7 +276,7 @@ const ArticleForm = () => {
   return (
     <div className="article-form-page">
       <div className="form-header">
-        <h1>{isEdit ? 'Edit Article' : 'Create New Article'}</h1>
+        <h1>{isEdit ? 'Edit News' : 'Create News'}</h1>
         <p style={{color: '#666', marginTop: '10px'}}>
           {user ? `Logged in as: ${user.email}` : 'Not logged in'}
         </p>
@@ -338,13 +348,13 @@ const ArticleForm = () => {
 
       <form onSubmit={handleSubmit} className="article-form">
         <div className="form-group">
-          <label htmlFor="title">Title *</label>
+          <label htmlFor="title">News Title *</label>
           <input
             type="text"
             id="title"
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            placeholder="Enter article title"
+            placeholder="Enter news title"
             required
             disabled={loading}
           />
@@ -361,7 +371,7 @@ const ArticleForm = () => {
           >
             <option value="የሃገር">የሃገር</option>
             <option value="የከተማ">የከተማ</option>
-            <option value="የክፍለ፟-ከተማ">የክፍለ፟-ከተማ</option>
+            <option value="የክፍለ-ከተማ">የክፍለ-ከተማ</option>
             <option value="የወረዳ">የወረዳ</option>
             <option value="ያልተመደበ">ያልተመደበ</option>
           </select>
@@ -475,7 +485,7 @@ const ArticleForm = () => {
             className="btn btn-primary"
             disabled={loading || uploading}
           >
-            {loading ? (uploading ? 'Uploading...' : 'Publishing...') : (isEdit ? 'Update Article' : 'Publish Article')}
+            {loading ? (uploading ? 'Uploading...' : 'Publishing...') : (isEdit ? 'Update News' : 'Publish News')}
           </button>
         </div>
       </form>

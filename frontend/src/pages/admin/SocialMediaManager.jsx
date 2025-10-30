@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
+import ConfirmModal from '../../components/ConfirmModal';
 import './SocialMediaManager.css';
 
 const platformIcons = {
@@ -27,10 +29,12 @@ const platformNames = {
 };
 
 const SocialMediaManager = () => {
+  const { toast } = useToast();
   const [links, setLinks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null);
   const [formData, setFormData] = useState({
     platform: 'facebook',
     url: '',
@@ -54,7 +58,7 @@ const SocialMediaManager = () => {
       setLinks(data || []);
     } catch (error) {
       console.error('Error fetching links:', error);
-      alert('የማህበራዊ ሚዲያ አገናኞች ማምጣት አልተቻለም');
+      toast.error('የማህበራዊ ሚዲያ አገናኞች ማምጣት አልተቻለም');
     } finally {
       setLoading(false);
     }
@@ -71,21 +75,21 @@ const SocialMediaManager = () => {
           .eq('id', editingId);
 
         if (error) throw error;
-        alert('አገናኝ ተስተካክሏል!');
+        toast.success('አገናኝ ተስተካክሏል!');
       } else {
         const { error } = await supabase
           .from('social_media_links')
           .insert([formData]);
 
         if (error) throw error;
-        alert('አዲስ አገናኝ ተጨምሯል!');
+        toast.success('አዲስ አገናኝ ተጨምሯል!');
       }
 
       resetForm();
       fetchLinks();
     } catch (error) {
       console.error('Error saving link:', error);
-      alert('አገናኝ ማስቀመጥ አልተቻለም: ' + error.message);
+      toast.error('አገናኝ ማስቀመጥ አልተቻለም: ' + error.message);
     }
   };
 
@@ -101,21 +105,23 @@ const SocialMediaManager = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('እርግጠኛ ነዎት ይህን አገናኝ መሰረዝ ይፈልጋሉ?')) return;
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
 
     try {
       const { error } = await supabase
         .from('social_media_links')
         .delete()
-        .eq('id', id);
+        .eq('id', confirmDelete.id);
 
       if (error) throw error;
-      alert('አገናኝ ተሰርዟል!');
+      toast.success('አገናኝ ተሰርዟል!');
       fetchLinks();
     } catch (error) {
       console.error('Error deleting link:', error);
-      alert('አገናኝ መሰረዝ አልተቻለም');
+      toast.error('አገናኝ መሰረዝ አልተቻለም');
+    } finally {
+      setConfirmDelete(null);
     }
   };
 
@@ -272,7 +278,7 @@ const SocialMediaManager = () => {
                 </button>
                 <button 
                   className="btn-delete"
-                  onClick={() => handleDelete(link.id)}
+                  onClick={() => setConfirmDelete({ id: link.id, name: platformNames[link.platform] })}
                   title="ሰርዝ"
                 >
                   🗑️
@@ -289,6 +295,16 @@ const SocialMediaManager = () => {
           )}
         </div>
       )}
+      <ConfirmModal
+        isOpen={!!confirmDelete}
+        onClose={() => setConfirmDelete(null)}
+        onConfirm={handleDelete}
+        title="አገናኝን ይሰርዙ? / Delete Link?"
+        message={`Are you sure you want to delete ${confirmDelete?.name || 'this link'}?`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        icon="🗑️"
+      />
     </div>
   );
 };

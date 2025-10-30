@@ -275,7 +275,7 @@ window.addEventListener('appinstalled', () => {
 ## 🔮 **Future Enhancements**
 
 ### Planned Features:
-- [ ] Push notifications for new articles
+- [ ] Push notifications for s
 - [ ] Background sync for offline article reading
 - [ ] Share API integration
 - [ ] iOS install instructions modal
