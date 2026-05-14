@@ -15,9 +15,9 @@ jobs:
       - name: Query Supabase to prevent inactivity pause
         run: |
           response=$(curl -s -o /dev/null -w "%{http_code}" \
-            "${{ secrets.VITE_SUPABASE_URL }}/rest/v1/articles?select=id&limit=1" \
-            -H "apikey: ${{ secrets.VITE_SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.VITE_SUPABASE_ANON_KEY }}")
+            "https://wiarcdovjmotruksnvaa.supabase.co/rest/v1/articles?select=id&limit=1" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}")
 
           echo "Response status: $response"
 
