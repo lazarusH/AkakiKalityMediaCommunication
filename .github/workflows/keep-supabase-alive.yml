@@ -12,12 +12,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Query Supabase to prevent inactivity pause
+      - name: Ping Supabase health endpoint
         run: |
           response=$(curl -s -o /dev/null -w "%{http_code}" \
-            "https://wiarcdovjmotruksnvaa.supabase.co/rest/v1/articles?select=id&limit=1" \
-            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}")
+            "https://wiarcdovjmotruksnvaa.supabase.co/rest/v1/" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpYXJjZG92am1vdHJ1a3NudmFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEyMTAwMDIsImV4cCI6MjA3Njc4NjAwMn0.Rcpuf96Xk6Ks0S4LhUy8OeRdwgoEy1V6EJL3pLrf0_U")
 
           echo "Response status: $response"
 
