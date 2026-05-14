@@ -2,9 +2,8 @@ name: Keep Supabase Alive
 
 on:
   schedule:
-    # Runs every 3 days at 08:00 UTC
     - cron: '0 8 */3 * *'
-  workflow_dispatch: # Allow manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   ping:
@@ -15,13 +14,12 @@ jobs:
       - name: Ping Supabase health endpoint
         run: |
           response=$(curl -s -o /dev/null -w "%{http_code}" \
-            "https://wiarcdovjmotruksnvaa.supabase.co/rest/v1/" \
-            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpYXJjZG92am1vdHJ1a3NudmFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEyMTAwMDIsImV4cCI6MjA3Njc4NjAwMn0.Rcpuf96Xk6Ks0S4LhUy8OeRdwgoEy1V6EJL3pLrf0_U")
+            "https://wiarcdovjmotruksnvaa.supabase.co/auth/v1/health")
 
           echo "Response status: $response"
 
           if [ "$response" -ge 200 ] && [ "$response" -lt 300 ]; then
-            echo "✅ Supabase is alive and responding."
+            echo "✅ Supabase is alive."
           else
             echo "❌ Unexpected response: $response"
             exit 1
