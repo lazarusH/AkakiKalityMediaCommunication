@@ -239,6 +239,7 @@
 .files-table-container {
   width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.08);
@@ -246,6 +247,7 @@
 }
 .files-table {
   width: 100%;
+  min-width: 320px;
   border-collapse: collapse;
   font-size: 1rem;
   color: #1e3a8a;
@@ -273,7 +275,7 @@
   color: #3b82f6;
 }
 .file-table-actions {
-  min-width: 120px;
+  white-space: nowrap;
 }
 .btn-view {
   background: #3b82f6;
@@ -286,6 +288,7 @@
   font-weight: 600;
   transition: all 0.2s;
   text-decoration: none;
+  display: inline-block;
 }
 .btn-view:hover {
   background: #2563eb;
@@ -295,27 +298,40 @@
   color: white;
   border: none;
   border-radius: 6px;
-  padding: 6px 16px;
+  padding: 6px 10px;
   cursor: pointer;
-  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1;
   transition: all 0.2s;
 }
 .btn-delete:hover {
   background: #dc2626;
+  transform: scale(1.1);
 }
 
 @media screen and (max-width: 768px) {
+  .manager-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .manager-header h1 {
-    font-size: 2rem;
+    font-size: 1.8rem;
+  }
+
+  .btn-primary {
+    width: 100%;
   }
 
   .files-table th, .files-table td {
-    padding: 10px 8px;
-    font-size: 0.96rem;
+    padding: 10px 10px;
+    font-size: 0.9rem;
   }
+
   .file-table-title {
-    max-width: 100px;
+    max-width: 120px;
   }
+
   .files-table-container {
     box-shadow: none;
   }
@@ -334,6 +350,20 @@
 
   .file-icon-preview {
     font-size: 1.5rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .manager-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .upload-form {
+    padding: 16px;
+  }
+
+  .upload-form h3 {
+    font-size: 1.2rem;
   }
 }
 

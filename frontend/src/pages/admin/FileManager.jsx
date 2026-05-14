@@ -307,7 +307,7 @@ const FileManager = () => {
                   <td className="file-table-date">{new Date(file.created_at).toLocaleDateString('en-US')}</td>
                   <td className="file-table-actions">
                     <a href={file.file_url} target="_blank" rel="noopener noreferrer" className="btn-view">View</a>
-                    <button onClick={() => setConfirmDelete({ id: file.id, title: file.title })} className="btn-delete">Delete</button>
+                    <button onClick={() => setConfirmDelete({ id: file.id, title: file.title })} className="btn-delete" title="Delete">🗑️</button>
                   </td>
                 </tr>
               ))}

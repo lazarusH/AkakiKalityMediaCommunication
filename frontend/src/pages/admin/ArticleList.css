@@ -180,16 +180,27 @@
 @media screen and (max-width: 968px) {
   .table-container {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .articles-table {
-    min-width: 800px;
+    min-width: 700px;
   }
 }
 
 @media screen and (max-width: 768px) {
   .list-header h1 {
-    font-size: 2rem;
+    font-size: 1.8rem;
+  }
+
+  .list-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btn-primary {
+    width: 100%;
+    text-align: center;
   }
 
   .filter-section {
@@ -205,10 +216,32 @@
     padding: 10px 12px;
     grid-column: span 1;
   }
+
+  .articles-table th,
+  .articles-table td {
+    padding: 12px 10px;
+    font-size: 0.9rem;
+  }
+
+  .actions-cell {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    width: 100%;
+    text-align: center;
+    padding: 8px 12px;
+  }
 }
 
 /* Extra-small phones: use 2 columns */
 @media screen and (max-width: 420px) {
+  .list-header h1 {
+    font-size: 1.5rem;
+  }
+
   .filter-section {
     grid-template-columns: repeat(2, 1fr);
   }

@@ -199,6 +199,19 @@
 
 /* Responsive */
 @media screen and (max-width: 768px) {
+  .social-media-manager {
+    padding: 0;
+  }
+
+  .social-form {
+    padding: 20px;
+  }
+
+  .social-form h3 {
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+  }
+
   .links-grid {
     grid-template-columns: 1fr;
   }
@@ -213,6 +226,23 @@
 
   .platform-name {
     font-size: 1rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .social-form {
+    padding: 16px;
+  }
+
+  .link-actions {
+    flex-wrap: wrap;
+  }
+
+  .btn-toggle,
+  .link-actions .btn-edit,
+  .link-actions .btn-delete {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 0;
   }
 }
 

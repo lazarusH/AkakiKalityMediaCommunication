@@ -46,6 +46,7 @@ const AdminDashboard = () => {
               <span></span>
             </span>
           </button>
+          <h1 className="header-title">Admin Portal</h1>
         </div>
         
         <div className="header-right">
