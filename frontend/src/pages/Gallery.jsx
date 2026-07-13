@@ -49,34 +49,43 @@ const Gallery = () => {
         .order('display_order', { ascending: true });
 
       if (error) throw error;
-      
-      // Fetch first photo from each album to use as cover
-      const albumsWithCovers = await Promise.all(
-        (data || []).map(async (album) => {
-          try {
-            // Always fetch the first photo as thumbnail for consistency
-            const photos = await fetchFlickrAlbumPhotos(album.flickr_url);
-            if (photos && photos.length > 0) {
-              return { 
-                ...album, 
-                thumbnail_url: photos[0].thumbnail,
-                photo_count: photos.length // Update photo count
-              };
-            }
-          } catch (err) {
-            console.error(`Error fetching cover for ${album.title}:`, err);
-          }
-          // Return album with existing data if fetch fails
-          return album;
-        })
-      );
-      
-      setFlickrAlbums(albumsWithCovers);
-      setFilteredAlbums(albumsWithCovers);
+
+      const albums = data || [];
+      setFlickrAlbums(albums);
+      setFilteredAlbums(albums);
+      setLoading(false);
+
+      // Load missing covers in the background (don't block the page)
+      loadAlbumCovers(albums);
     } catch (error) {
       console.error('Error fetching Flickr albums:', error);
-    } finally {
       setLoading(false);
+    }
+  };
+
+  const loadAlbumCovers = async (albums) => {
+    const albumsNeedingCovers = albums.filter((album) => !album.thumbnail_url);
+
+    for (const album of albumsNeedingCovers) {
+      try {
+        const photos = await fetchFlickrAlbumPhotos(album.flickr_url);
+        if (!photos.length) continue;
+
+        const updatedAlbum = {
+          ...album,
+          thumbnail_url: photos[0].thumbnail,
+          photo_count: photos.length,
+        };
+
+        setFlickrAlbums((prev) =>
+          prev.map((item) => (item.id === album.id ? updatedAlbum : item))
+        );
+        setFilteredAlbums((prev) =>
+          prev.map((item) => (item.id === album.id ? updatedAlbum : item))
+        );
+      } catch (err) {
+        console.error(`Error fetching cover for ${album.title}:`, err);
+      }
     }
   };
 
